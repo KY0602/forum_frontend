@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">HW5</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string-array name="titles_all">
+        <item>Welcome!</item>
+        <item>Hello World!</item>
+        <item>Android!</item>
+    </string-array>
+    <string-array name="messages_all">
+        <item>Welcome to the world of Android!</item>
+        <item>Hello World! Welcome!</item>
+        <item>I love Android!</item>
+    </string-array>
+    <string-array name="titles">
+        <item>Welcome!</item>
+        <item>Hello World!</item>
+    </string-array>
+    <string-array name="messages">
+        <item>Welcome to the world of Android!</item>
+        <item>Hello World! Welcome!</item>
+    </string-array>
+    <string name="text_url"><u>http://www.baidu.com</u></string>
+    <string name="text_map"><u>清华大学</u></string>
+    <string name="share_text_with">Share this text with:</string>
+    <string name="tab_label1">All Status</string>
+    <string name="tab_label2">Followed</string>
+</resources>
