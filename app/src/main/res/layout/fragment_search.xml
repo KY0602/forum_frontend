@@ -9,15 +9,16 @@
 
     <EditText
         android:id="@+id/searchTxt"
-        android:layout_width="280dp"
-        android:layout_height="47dp"
+        android:layout_width="291dp"
+        android:layout_height="54dp"
+        android:layout_marginStart="16dp"
         android:ems="10"
-        android:hint="Search"
+        android:hint="搜索"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.023" />
+        app:layout_constraintVertical_bias="0.019" />
 
     <ImageButton
         android:id="@+id/searchButton"
@@ -29,4 +30,17 @@
         app:layout_constraintHorizontal_bias="0.889"
         app:layout_constraintStart_toEndOf="@+id/searchTxt"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/searchOut"
+        android:layout_width="375dp"
+        android:layout_height="516dp"
+        android:layout_marginTop="35dp"
+        android:layout_marginBottom="100dp"
+        android:background="@android:drawable/editbox_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchTxt"
+        app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -13,7 +13,7 @@
         android:layout_marginTop="16dp"
         android:text="动态列表"
         android:textAlignment="viewStart"
-        android:textColor="@color/black"
+        android:textColor="@color/purple_200"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"

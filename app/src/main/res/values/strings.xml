@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">HW5</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string-array name="titles_all">
         <item>Welcome!</item>
@@ -23,6 +22,10 @@
     <string name="text_url"><u>http://www.baidu.com</u></string>
     <string name="text_map"><u>清华大学</u></string>
     <string name="share_text_with">Share this text with:</string>
-    <string name="tab_label1">All Status</string>
-    <string name="tab_label2">Followed</string>
+    <string name="tab_label1">全部动态</string>
+    <string name="tab_label2">已关注用户动态</string>
+    <string name="name">Kun</string>
+    <string name="gender">男</string>
+    <string name="age">23</string>
+    <string name="desc">欢迎来到我的个人页面</string>
 </resources>
