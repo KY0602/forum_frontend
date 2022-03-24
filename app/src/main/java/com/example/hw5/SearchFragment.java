@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.*;
 import androidx.fragment.app.Fragment;
@@ -49,8 +50,14 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
 
     private void clickSearch() {
         String search = searchTxt.getText().toString();
-        searchTxt.getText().clear();
-        String txt = "\'" + search + "\'" + "搜索结果";
-        searchOut.setText(txt);
+        if (search.isEmpty()) {
+            Toast.makeText(getActivity().getApplicationContext(), "未输入搜索内容", Toast.LENGTH_LONG).show();
+        }
+        else {
+            searchTxt.getText().clear();
+            String txt = "\'" + search + "\'" + "搜索结果: ";
+            Toast.makeText(getActivity().getApplicationContext(), "搜索成功", Toast.LENGTH_LONG).show();
+            searchOut.setText(txt);
+        }
     }
 }

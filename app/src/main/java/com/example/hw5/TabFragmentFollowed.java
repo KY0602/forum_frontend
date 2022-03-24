@@ -45,7 +45,7 @@ public class TabFragmentFollowed extends Fragment {
                 getActivity().getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.flFragment, statusFragment)
-                        .addToBackStack(null)
+                        .addToBackStack("status")
                         .commit();
             }
         });

@@ -24,8 +24,4 @@
     <string name="share_text_with">Share this text with:</string>
     <string name="tab_label1">全部动态</string>
     <string name="tab_label2">已关注用户动态</string>
-    <string name="name">Kun</string>
-    <string name="gender">男</string>
-    <string name="age">23</string>
-    <string name="desc">欢迎来到我的个人页面</string>
 </resources>

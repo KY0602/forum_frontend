@@ -46,28 +46,28 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.flFragment, homeFragment)
-                        .addToBackStack(null)
+                        .addToBackStack("home")
                         .commit();
                 return true;
             case R.id.post:
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.flFragment, postFragment)
-                        .addToBackStack(null)
+                        .addToBackStack("post")
                         .commit();
                 return true;
             case R.id.search:
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.flFragment, searchFragment)
-                        .addToBackStack(null)
+                        .addToBackStack("search")
                         .commit();
                 return true;
             case R.id.profile:
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.flFragment, profileFragment)
-                        .addToBackStack(null)
+                        .addToBackStack("profile")
                         .commit();
                 return true;
         }

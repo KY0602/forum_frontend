@@ -85,54 +85,91 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileAge" />
 
-    <TextView
+    <EditText
         android:id="@+id/profileName2"
         android:layout_width="211dp"
-        android:layout_height="30dp"
+        android:layout_height="40dp"
         android:layout_marginStart="40dp"
         android:layout_marginTop="24dp"
-        android:background="@android:drawable/editbox_background"
+        android:layout_marginEnd="16dp"
+        android:hint="用户名"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.055"
         app:layout_constraintStart_toEndOf="@+id/profileName"
         app:layout_constraintTop_toBottomOf="@+id/profilePic" />
 
-    <TextView
-        android:id="@+id/profileGender2"
-        android:layout_width="211dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="24dp"
-        android:background="@android:drawable/editbox_background"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.055"
-        app:layout_constraintStart_toEndOf="@+id/profileGender"
-        app:layout_constraintTop_toBottomOf="@+id/profileName2" />
-
-    <TextView
-        android:id="@+id/profileAge2"
-        android:layout_width="211dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="24dp"
-        android:background="@android:drawable/editbox_background"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.055"
-        app:layout_constraintStart_toEndOf="@+id/profileAge"
-        app:layout_constraintTop_toBottomOf="@+id/profileGender2" />
-
-    <TextView
+    <EditText
         android:id="@+id/profileDesc2"
-        android:layout_width="341dp"
-        android:layout_height="245dp"
+        android:layout_width="344dp"
+        android:layout_height="206dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="24dp"
+        android:layout_marginEnd="16dp"
         android:background="@android:drawable/editbox_background"
+        android:gravity="start|top"
+        android:hint="简介"
+        android:inputType="textMultiLine"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.271"
+        app:layout_constraintHorizontal_bias="0.057"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileDesc" />
+
+    <EditText
+        android:id="@+id/profileAge2"
+        android:layout_width="211dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:ems="10"
+        android:hint="年龄"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/profileAge"
+        app:layout_constraintTop_toBottomOf="@+id/radioGroupGender" />
+
+    <RadioGroup
+        android:id="@+id/radioGroupGender"
+        android:layout_width="211dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/profileGender"
+        app:layout_constraintTop_toBottomOf="@+id/profileName2">
+
+        <RadioButton
+            android:id="@+id/radioMale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="男"
+            android:textColor="#ff6d6e71" />
+
+        <RadioButton
+            android:id="@+id/radioFemale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:checked="false"
+            android:text="女"
+            android:textColor="#ff6d6e71"
+            android:textSize="14dp" />
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="24dp"
+        android:text="保存"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileDesc2" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
