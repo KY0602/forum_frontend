@@ -73,7 +73,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         String inDesc = desc.getText().toString();
         if (inName.isEmpty() || inAge.isEmpty()) {
             Log.d(LOG_TAG, "Error");
-            Toast.makeText(getActivity().getApplicationContext(), "未输入用户名或年龄", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity().getApplicationContext(), "用户名和年龄不能为空", Toast.LENGTH_LONG).show();
         }
         else {
             Log.d(LOG_TAG, inName + " " + gender + " " + inAge + " " + inDesc);

@@ -51,7 +51,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
     private void clickSearch() {
         String search = searchTxt.getText().toString();
         if (search.isEmpty()) {
-            Toast.makeText(getActivity().getApplicationContext(), "未输入搜索内容", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity().getApplicationContext(), "搜索内容不能为空", Toast.LENGTH_LONG).show();
         }
         else {
             searchTxt.getText().clear();

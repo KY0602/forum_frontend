@@ -51,7 +51,7 @@ public class PostFragment extends Fragment implements View.OnClickListener {
     private void clickPost() {
         String text = postTxt.getText().toString();
         if (text.isEmpty()) {
-            Toast.makeText(getActivity().getApplicationContext(), "未输入状态内容", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity().getApplicationContext(), "动态内容不能为空", Toast.LENGTH_LONG).show();
         }
         else {
             Toast.makeText(getActivity().getApplicationContext(), "发布成功", Toast.LENGTH_LONG).show();
