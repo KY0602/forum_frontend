@@ -16,6 +16,17 @@
         <entry key="..\:/Downloads/AndroidProjects/HW5/app/src/main/res/layout/fragment_tab_all.xml" value="0.25416666666666665" />
         <entry key="..\:/Downloads/AndroidProjects/HW5/app/src/main/res/layout/fragment_tab_followed.xml" value="0.25416666666666665" />
         <entry key="..\:/Downloads/AndroidProjects/HW5/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />
+        <entry key="..\:/Downloads/AndroidProjects/HW6/app/src/main/res/drawable/circle_border.xml" value="0.2265" />
+        <entry key="..\:/Downloads/AndroidProjects/HW6/app/src/main/res/drawable/edit.xml" value="0.2265" />
+        <entry key="..\:/Downloads/AndroidProjects/HW6/app/src/main/res/drawable/home.xml" value="0.2265" />
+        <entry key="..\:/Downloads/AndroidProjects/HW6/app/src/main/res/drawable/ic_home_background.xml" value="0.2265" />
+        <entry key="..\:/Downloads/AndroidProjects/HW6/app/src/main/res/drawable/person.xml" value="0.2265" />
+        <entry key="..\:/Downloads/AndroidProjects/HW6/app/src/main/res/drawable/search.xml" value="0.2265" />
+        <entry key="..\:/Downloads/AndroidProjects/HW6/app/src/main/res/layout/activity_main.xml" value="0.25416666666666665" />
+        <entry key="..\:/Downloads/AndroidProjects/HW6/app/src/main/res/layout/fragment_post.xml" value="0.25416666666666665" />
+        <entry key="..\:/Downloads/AndroidProjects/HW6/app/src/main/res/layout/fragment_profile.xml" value="0.25416666666666665" />
+        <entry key="..\:/Downloads/AndroidProjects/HW6/app/src/main/res/layout/fragment_status.xml" value="0.25416666666666665" />
+        <entry key="..\:/Downloads/AndroidProjects/HW6/app/src/main/res/menu/bottom_nav_menu.xml" value="0.25416666666666665" />
       </map>
     </option>
   </component>
