@@ -1,4 +1,4 @@
-package com.example.hw6;
+package com.example.hw;
 
 import org.junit.Test;
 

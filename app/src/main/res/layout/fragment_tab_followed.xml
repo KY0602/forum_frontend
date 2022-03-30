@@ -5,8 +5,8 @@
     android:layout_height="match_parent"
     tools:context=".TabFragmentFollowed">
 
-    <ListView
-        android:id="@+id/msgList_followed"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycle_followed"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 </FrameLayout>

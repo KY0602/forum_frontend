@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">HW6</string>
+    <string name="app_name">HW</string>
     <string-array name="titles_all">
         <item>Welcome!</item>
         <item>Hello World!</item>

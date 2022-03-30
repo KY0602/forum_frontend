@@ -1,4 +1,4 @@
-package com.example.hw6;
+package com.example.hw;
 
 import android.content.Intent;
 import android.net.Uri;

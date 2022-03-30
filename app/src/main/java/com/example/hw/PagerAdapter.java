@@ -1,4 +1,4 @@
-package com.example.hw6;
+package com.example.hw;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
