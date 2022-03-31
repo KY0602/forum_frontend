@@ -3,6 +3,7 @@ package com.example.hw;
 import android.content.Context;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
@@ -10,7 +11,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import java.util.LinkedList;
@@ -26,6 +26,7 @@ public class WordListAdapter extends
     private final LinkedList<String> mWordList;
     private final LinkedList<String> mContentList;
     private final LayoutInflater mInflater;
+    private AppCompatActivity activity;
 
     class WordViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public final TextView wordItemView;
@@ -114,6 +115,7 @@ public class WordListAdapter extends
         holder.wordItemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                activity = (AppCompatActivity)v.getContext();
                 Log.d(LOG_TAG, title);
                 Bundle extras = new Bundle();
                 extras.putString("EXTRA_TITLE", title);
@@ -122,14 +124,21 @@ public class WordListAdapter extends
                 StatusFragment statusFragment = new StatusFragment();
                 statusFragment.setArguments(extras);
 
-                AppCompatActivity activity = (AppCompatActivity) v.getContext();
-                activity.getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.flFragment, statusFragment)
-                        .addToBackStack("status")
-                        .commit();
+                switchContent(statusFragment);
             }
         });
+    }
+
+    public void switchContent(Fragment fragment) {
+        if (activity == null) {
+            return;
+        }
+        else if (activity instanceof MainActivity) {
+            Log.d(LOG_TAG, "switch");
+            MainActivity mainActivity = (MainActivity) activity;
+            Fragment frag = fragment;
+            mainActivity.switchContent(frag);
+        }
     }
 
     /**

@@ -9,7 +9,7 @@
     <TextView
         android:id="@+id/titleView2"
         android:layout_width="294dp"
-        android:layout_height="49dp"
+        android:layout_height="60dp"
         android:background="@android:drawable/editbox_background"
         android:text="TextView"
         android:textAlignment="center"

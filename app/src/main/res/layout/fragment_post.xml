@@ -8,42 +8,46 @@
     tools:context=".PostFragment" >
 
     <EditText
-        android:id="@+id/postTxt"
-        android:layout_width="304dp"
-        android:layout_height="89dp"
+        android:id="@+id/postMsg"
+        android:layout_width="375dp"
+        android:layout_height="555dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="30dp"
+        android:background="@android:drawable/editbox_background_normal"
         android:ems="10"
         android:gravity="start|top"
-        android:hint="发布动态"
+        android:hint="内容"
         android:inputType="textMultiLine"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.158"
+        app:layout_constraintHorizontal_bias="0.375"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.043" />
-
-    <TextView
-        android:id="@+id/postOut"
-        android:layout_width="378dp"
-        android:layout_height="418dp"
-        android:background="@android:drawable/editbox_background"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.515"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/postTxt"
-        app:layout_constraintVertical_bias="0.187" />
+        app:layout_constraintTop_toBottomOf="@+id/postButton"
+        app:layout_constraintVertical_bias="0.183" />
 
     <ImageButton
         android:id="@+id/postButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="18dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="10dp"
         android:src="@android:drawable/ic_menu_send"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/postTxt"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:id="@+id/postTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="28dp"
+        android:ems="10"
+        android:hint="标题"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toTopOf="@+id/postMsg"
+        app:layout_constraintEnd_toStartOf="@+id/postButton"
+        app:layout_constraintHorizontal_bias="0.051"
+        app:layout_constraintStart_toStartOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

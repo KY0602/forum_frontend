@@ -2,15 +2,26 @@ package com.example.hw;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.inputmethod.InputMethodManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+
+public class MainActivity extends AppCompatActivity{
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private BottomBarAdapter pagerAdapter;
+    private ViewPager viewPagerMain;
     BottomNavigationView bottomNavigationView;
+    HomeFragment homeFragment = new HomeFragment();
+    PostFragment postFragment = new PostFragment();
+    SearchFragment searchFragment = new SearchFragment();
+    ProfileFragment profileFragment = new ProfileFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,45 +29,63 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
         setContentView(R.layout.activity_main);
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
-        bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        bottomNavigationView.setSelectedItemId(R.id.home);
+        viewPagerMain = findViewById(R.id.viewPagerMain);
+
+        pagerAdapter = new BottomBarAdapter(getSupportFragmentManager());
+        pagerAdapter.addFragments(homeFragment);
+        pagerAdapter.addFragments(postFragment);
+        pagerAdapter.addFragments(searchFragment);
+        pagerAdapter.addFragments(profileFragment);
+
+        viewPagerMain.setAdapter(pagerAdapter);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch(item.getItemId()) {
+                    case R.id.home:
+                        viewPagerMain.setCurrentItem(0);
+                        return true;
+                    case R.id.post:
+                        viewPagerMain.setCurrentItem(1);
+                        return true;
+                    case R.id.search:
+                        viewPagerMain.setCurrentItem(2);
+                        return true;
+                    case R.id.profile:
+                        viewPagerMain.setCurrentItem(3);
+                        return true;
+                }
+                return false;
+            }
+        });
     }
-    HomeFragment homeFragment = new HomeFragment();
-    PostFragment postFragment = new PostFragment();
-    SearchFragment searchFragment = new SearchFragment();
-    ProfileFragment profileFragment = new ProfileFragment();
 
     @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.home:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.flFragment, homeFragment)
-                        .commit();
-                return true;
-            case R.id.post:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.flFragment, postFragment)
-                        .addToBackStack("post")
-                        .commit();
-                return true;
-            case R.id.search:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.flFragment, searchFragment)
-                        .addToBackStack("search")
-                        .commit();
-                return true;
-            case R.id.profile:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.flFragment, profileFragment)
-                        .addToBackStack("profile")
-                        .commit();
-                return true;
+    public void onBackPressed() {
+        int currentItem = viewPagerMain.getCurrentItem();
+        if (currentItem > 3 ) {
+            viewPagerMain.setCurrentItem(0, false);
         }
-        return false;
+        else if (currentItem != 0){
+            viewPagerMain.setCurrentItem(currentItem-1, true);
+        }
+        else {
+            super.onBackPressed();
+        }
+    }
+
+    public void switchContent(Fragment fragment) {
+        Log.d(LOG_TAG, "switch");
+        pagerAdapter.addFragments(fragment);
+        pagerAdapter.notifyDataSetChanged();
+        viewPagerMain.setCurrentItem(pagerAdapter.getCount()-1, false);
+    }
+
+    public void switchHome(String title, String msg) {
+        InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+        homeFragment.addStatus(title, msg);
+        viewPagerMain.setCurrentItem(0, false);
     }
 }

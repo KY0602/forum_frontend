@@ -11,6 +11,7 @@
         android:layout_width="156dp"
         android:layout_height="41dp"
         android:layout_marginTop="16dp"
+
         android:text="动态列表"
         android:textAlignment="viewStart"
         android:textColor="@color/purple_200"
