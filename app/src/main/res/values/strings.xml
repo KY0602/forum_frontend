@@ -18,7 +18,7 @@
         <item>Welcome to the world of Android!</item>
         <item>Hello World! Welcome!</item>
     </string-array>
-    <string name="text_url"><u>http://www.baidu.com</u></string>
+    <string name="text_url"><u>http://info.tsinghua.edu.cn</u></string>
     <string name="text_map"><u>清华大学</u></string>
     <string name="share_text_with">Share this text with:</string>
     <string name="tab_label1">全部动态</string>

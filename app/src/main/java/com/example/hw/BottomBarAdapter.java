@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BottomBarAdapter extends SmartFragmentStatePagerAdapter {
+    private static final String LOG_TAG = BottomBarAdapter.class.getSimpleName();
     private final List<Fragment> fragments = new ArrayList<>();
 
     public BottomBarAdapter(FragmentManager fragmentManager) {
@@ -20,6 +21,17 @@ public class BottomBarAdapter extends SmartFragmentStatePagerAdapter {
     @Override
     public Fragment getItem(int position) {
         return fragments.get(position);
+    }
+
+    @Override
+    public int getItemPosition(Object object){
+        int index = fragments.indexOf(object);
+        if (index == -1) {
+            return POSITION_NONE;
+        }
+        else {
+            return index;
+        }
     }
 
     @Override

@@ -19,6 +19,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     public PagerAdapter(FragmentManager fm, int NumOfTabs) {
         super(fm);
+        Log.d(LOG_TAG, "Pager created");
         this.mNumOfTabs = NumOfTabs;
         for (int i = 1; i < 51; i++) {
             if (i < 26) {
@@ -31,19 +32,12 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     }
 
     public void addStatus(String title, String msg) {
-        Log.d(LOG_TAG, title);
         title_list_all.add(0, title);
         msg_list_all.add(0, msg);
     }
 
-    /**
-     * Return the Fragment associated with a specified position.
-     *
-     * @param position
-     */
     @Override
     public Fragment getItem(int position) {
-        Log.d(LOG_TAG, "update");
         Bundle extras_all = new Bundle();
         Bundle extras_followed = new Bundle();
         extras_all.putStringArrayList("EXTRA_TITLE", title_list_all);
@@ -68,9 +62,6 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         return POSITION_NONE;
     }
 
-    /**
-     * Return the number of views available.
-     */
     @Override
     public int getCount() {
         return mNumOfTabs;

@@ -3,7 +3,6 @@ package com.example.hw;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
-import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +15,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 public class MainActivity extends AppCompatActivity{
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private BottomBarAdapter pagerAdapter;
-    private ViewPager viewPagerMain;
+    private NoSwipePager viewPagerMain;
     BottomNavigationView bottomNavigationView;
     HomeFragment homeFragment = new HomeFragment();
     PostFragment postFragment = new PostFragment();
@@ -31,6 +30,9 @@ public class MainActivity extends AppCompatActivity{
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         viewPagerMain = findViewById(R.id.viewPagerMain);
 
+        viewPagerMain.setOffscreenPageLimit(4);
+        viewPagerMain.setPagingEnabled(false);
+
         pagerAdapter = new BottomBarAdapter(getSupportFragmentManager());
         pagerAdapter.addFragments(homeFragment);
         pagerAdapter.addFragments(postFragment);
@@ -44,16 +46,16 @@ public class MainActivity extends AppCompatActivity{
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch(item.getItemId()) {
                     case R.id.home:
-                        viewPagerMain.setCurrentItem(0);
+                        viewPagerMain.setCurrentItem(0, false);
                         return true;
                     case R.id.post:
-                        viewPagerMain.setCurrentItem(1);
+                        viewPagerMain.setCurrentItem(1, false);
                         return true;
                     case R.id.search:
-                        viewPagerMain.setCurrentItem(2);
+                        viewPagerMain.setCurrentItem(2, false);
                         return true;
                     case R.id.profile:
-                        viewPagerMain.setCurrentItem(3);
+                        viewPagerMain.setCurrentItem(3, false);
                         return true;
                 }
                 return false;
