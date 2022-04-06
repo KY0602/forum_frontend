@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -79,25 +80,11 @@ public class WordListAdapter extends
                 Bundle extras = new Bundle();
                 extras.putString("EXTRA_TITLE", title);
                 extras.putString("EXTRA_MESSAGE", msg);
-
-                StatusFragment statusFragment = new StatusFragment();
-                statusFragment.setArguments(extras);
-
-                switchContent(statusFragment);
+                Intent intent  = new Intent(v.getContext(), StatusActivity.class);
+                intent.putExtras(extras);
+                v.getContext().startActivity(intent);
             }
         });
-    }
-
-    public void switchContent(Fragment fragment) {
-        if (activity == null) {
-            return;
-        }
-        else if (activity instanceof MainActivity) {
-            Log.d(LOG_TAG, "switch");
-            MainActivity mainActivity = (MainActivity) activity;
-            Fragment frag = fragment;
-            mainActivity.switchContent(frag);
-        }
     }
 
     @Override

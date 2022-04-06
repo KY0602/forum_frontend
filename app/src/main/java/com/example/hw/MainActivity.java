@@ -3,6 +3,7 @@ package com.example.hw;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -11,11 +12,13 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import java.util.ArrayList;
+
 
 public class MainActivity extends AppCompatActivity{
     private static final String LOG_TAG = MainActivity.class.getSimpleName();
     private BottomBarAdapter pagerAdapter;
-    private NoSwipePager viewPagerMain;
+    private ViewPager viewPagerMain;
     BottomNavigationView bottomNavigationView;
     HomeFragment homeFragment = new HomeFragment();
     PostFragment postFragment = new PostFragment();
@@ -31,7 +34,6 @@ public class MainActivity extends AppCompatActivity{
         viewPagerMain = findViewById(R.id.viewPagerMain);
 
         viewPagerMain.setOffscreenPageLimit(4);
-        viewPagerMain.setPagingEnabled(false);
 
         pagerAdapter = new BottomBarAdapter(getSupportFragmentManager());
         pagerAdapter.addFragments(homeFragment);
@@ -66,22 +68,12 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void onBackPressed() {
         int currentItem = viewPagerMain.getCurrentItem();
-        if (currentItem > 3 ) {
-            viewPagerMain.setCurrentItem(0, false);
-        }
-        else if (currentItem != 0){
+        if (currentItem != 0){
             viewPagerMain.setCurrentItem(currentItem-1, true);
         }
         else {
             super.onBackPressed();
         }
-    }
-
-    public void switchContent(Fragment fragment) {
-        Log.d(LOG_TAG, "switch");
-        pagerAdapter.addFragments(fragment);
-        pagerAdapter.notifyDataSetChanged();
-        viewPagerMain.setCurrentItem(pagerAdapter.getCount()-1, false);
     }
 
     public void switchHome(String title, String msg) {
