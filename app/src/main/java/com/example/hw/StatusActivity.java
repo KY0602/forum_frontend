@@ -6,6 +6,7 @@ import androidx.core.app.ShareCompat;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -46,7 +47,7 @@ public class StatusActivity extends AppCompatActivity {
         msgView.setText(msg);
 
         urlText = findViewById(R.id.url);
-        urlText.setText(getResources().getText(R.string.text_url));
+        urlText.setText(getResources().getString(R.string.text_url));
         urlText.setOnClickListener(this::clickURL);
 
         mapText = findViewById(R.id.map);

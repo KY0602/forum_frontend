@@ -6,7 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -47,26 +49,40 @@ public class TabFragment extends Fragment {
         }
 
         load_button = v.findViewById(R.id.load_button);
-        load_button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                int len = statusTitleAll.size();
-                int count = 0;
-                while (len + count < title_list_all.size()) {
-                    statusTitleAll.addLast(title_list_all.get(len+count));
-                    statusMsgAll.addLast(msg_list_all.get(len+count));
-                    count++;
-                    if (count > 9) break;
-                }
-                status_all.getAdapter().notifyItemInserted(len);
-                status_all.smoothScrollToPosition(len+count);
-            }
-        });
+        load_button.setOnClickListener(this::loadMore);
 
         status_all = v.findViewById(R.id.recycle_all);
         mAdapter = new WordListAdapter(getContext(), statusTitleAll, statusMsgAll);
         status_all.setAdapter(mAdapter);
-        status_all.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager llm = new LinearLayoutManager((getContext()));
+        status_all.setLayoutManager(llm);
+
+        status_all.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (llm.findLastCompletelyVisibleItemPosition() >= statusTitleAll.size()-3) {
+                    loadMore(v);
+                }
+            }
+        });
         return v;
+    }
+
+    private void loadMore(View view) {
+        int len = statusTitleAll.size();
+        int count = 0;
+        while (len + count < title_list_all.size()) {
+            statusTitleAll.addLast(title_list_all.get(len+count));
+            statusMsgAll.addLast(msg_list_all.get(len+count));
+            count++;
+            if (count > 9) break;
+        }
+        status_all.getAdapter().notifyItemInserted(len);
+        if (count == 0) {
+            Toast.makeText(getActivity().getApplicationContext(), "已没有更多动态", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getActivity().getApplicationContext(), "已加载更多动态", Toast.LENGTH_SHORT).show();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.example.hw;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,9 +18,24 @@ public class PostFragment extends Fragment implements View.OnClickListener {
     private EditText postTitle, postMsg;
     private ImageButton postButton;
     private AppCompatActivity activity;
+    private SharedPreferences pref;
 
     public PostFragment(){
         // require a empty public constructor
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(LOG_TAG, "Destroy");
+        saveDraft();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, "Pause");
+        saveDraft();
     }
 
     @Override
@@ -33,8 +49,32 @@ public class PostFragment extends Fragment implements View.OnClickListener {
         postButton.setOnClickListener(this);
 
         activity = (AppCompatActivity)v.getContext();
+        pref = v.getContext().getSharedPreferences("Draft", 0);
+        loadDraft();
 
         return v;
+    }
+
+    public void saveDraft() {
+        SharedPreferences.Editor editor = pref.edit();
+        String title = postTitle.getText().toString();
+        String msg = postMsg.getText().toString();
+        editor.putString("TITLE", title);
+        editor.putString("MESSAGE", msg);
+        editor.commit();
+        Toast.makeText(getActivity().getApplicationContext(), "草稿保存成功", Toast.LENGTH_SHORT).show();
+    }
+
+    public void loadDraft() {
+        if (pref.contains("TITLE") || pref.contains("MESSAGE")) {
+            Toast.makeText(getActivity().getApplicationContext(), "草稿加载成功", Toast.LENGTH_SHORT).show();
+            if (pref.contains("TITLE")) {
+                postTitle.setText(pref.getString("TITLE", ""));
+            }
+            if (pref.contains("MESSAGE")) {
+                postMsg.setText(pref.getString("MESSAGE", ""));
+            }
+        }
     }
 
     public void onClick(final View v) {
@@ -60,6 +100,10 @@ public class PostFragment extends Fragment implements View.OnClickListener {
             postTitle.getText().clear();
             postMsg.getText().clear();
 
+            SharedPreferences.Editor editor = pref.edit();
+            editor.clear();
+            editor.commit();
+
             switchContent(title, msg);
         }
     }
@@ -69,7 +113,7 @@ public class PostFragment extends Fragment implements View.OnClickListener {
             return;
         }
         else if (activity instanceof MainActivity) {
-            Log.d(LOG_TAG, "switch");
+            Log.d(LOG_TAG, "Switch");
             MainActivity mainActivity = (MainActivity) activity;
             mainActivity.switchHome(title, msg);
         }

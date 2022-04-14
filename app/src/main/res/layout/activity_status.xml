@@ -25,8 +25,8 @@
 
     <TextView
         android:id="@+id/url"
-        android:layout_width="199dp"
-        android:layout_height="30dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
         android:clickable="true"
         android:drawablePadding="@dimen/cardview_compat_inset_shadow"
@@ -34,20 +34,22 @@
         android:textColor="@android:color/holo_blue_bright"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.304"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/msgView" />
 
     <TextView
         android:id="@+id/map"
-        android:layout_width="107dp"
+        android:layout_width="wrap_content"
         android:layout_height="26dp"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="48dp"
         android:clickable="true"
         android:textAlignment="center"
         android:textColor="@color/purple_200"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.415"
+        app:layout_constraintStart_toEndOf="@+id/imageView3"
         app:layout_constraintTop_toBottomOf="@+id/url" />
 
     <ImageButton
@@ -90,9 +92,8 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
-        app:layout_constraintEnd_toStartOf="@+id/url"
-        app:layout_constraintHorizontal_bias="0.797"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/msgView"
         app:srcCompat="@android:drawable/ic_dialog_info" />
@@ -101,9 +102,8 @@
         android:id="@+id/imageView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="52dp"
-        app:layout_constraintEnd_toStartOf="@+id/map"
-        app:layout_constraintHorizontal_bias="0.491"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="44dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/url"
         app:srcCompat="@android:drawable/ic_dialog_map" />
