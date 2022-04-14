@@ -62,12 +62,12 @@ public class PostFragment extends Fragment implements View.OnClickListener {
         editor.putString("TITLE", title);
         editor.putString("MESSAGE", msg);
         editor.commit();
-        Toast.makeText(getActivity().getApplicationContext(), "草稿保存成功", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getActivity().getApplicationContext(), "草稿保存成功", Toast.LENGTH_SHORT).show();
     }
 
     public void loadDraft() {
         if (pref.contains("TITLE") || pref.contains("MESSAGE")) {
-            Toast.makeText(getActivity().getApplicationContext(), "草稿加载成功", Toast.LENGTH_SHORT).show();
+//            Toast.makeText(getActivity().getApplicationContext(), "草稿加载成功", Toast.LENGTH_SHORT).show();
             if (pref.contains("TITLE")) {
                 postTitle.setText(pref.getString("TITLE", ""));
             }
