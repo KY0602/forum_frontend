@@ -2,21 +2,36 @@ package com.example.hw;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.Html;
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.MediaController;
 import android.widget.TextView;
+import android.widget.VideoView;
+
+import java.io.File;
 
 public class StatusActivity extends AppCompatActivity {
     private static final String LOG_TAG = StatusActivity.class.getSimpleName();
     private TextView titleView, msgView, urlText, mapText;
     private ImageButton shareButton, backButton;
+    private ImageView imageView;
+
+    // For audio
+    private Button startButton, pauseButton;
+    boolean isPlay = false;
+    boolean isPause = false;
 
     @Override
     protected void onStart() {
@@ -32,14 +47,76 @@ public class StatusActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onPause() {
+        // Unregister since the activity is paused.
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(
+                mMessageReceiver);
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        // Register to receive messages.
+        // We are registering an observer (mMessageReceiver) to receive Intents
+        // with actions named "IMAGE-DOWNLOADED".
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mMessageReceiver, new IntentFilter("IMAGE-DOWNLOADED"));
+        super.onResume();
+    }
+
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "IMAGE-DOWNLOADED" is broadcast.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver(){
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(LOG_TAG, "Image downloaded");
+            File imgFile = new File("/storage/emulated/0/Pictures/download_tmp/tmp.png");
+            imageView.setImageURI(Uri.fromFile(imgFile));
+        }
+    };
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_status);
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
+        String type = extras.getString("EXTRA_TYPE");
         String title = extras.getString("EXTRA_TITLE");
         String msg = extras.getString("EXTRA_MESSAGE");
+        if (type.equals("MUSIC")) {
+            Log.d(LOG_TAG, "Music");
+            setContentView(R.layout.activity_status_music);
+            startButton = findViewById(R.id.start);
+            startButton.setOnClickListener(this::startPlayer);
+
+            pauseButton = findViewById(R.id.pause);
+            pauseButton.setOnClickListener(this::pausePlayer);
+        } else if (type.equals("VIDEO")) {
+            Log.d(LOG_TAG, "Video");
+            setContentView(R.layout.activity_status_video);
+
+            VideoView videoView = findViewById(R.id.videoView);
+            MediaController mediaController = new MediaController(this);
+            mediaController.setAnchorView(videoView);
+            Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Movies/nevergonna.mp4");
+            videoView.setMediaController(mediaController);
+            videoView.setVideoURI(uri);
+            videoView.requestFocus();
+            videoView.start();
+        }
+        else {
+            setContentView(R.layout.activity_status);
+            imageView = findViewById(R.id.image);
+
+            File imgFile = new File(getResources().getString(R.string.image_loc));
+            if (imgFile.exists()) {
+                imageView.setImageURI(Uri.fromFile(imgFile));
+            } else {
+                Intent imgIntent = new Intent(getBaseContext(), ImageService.class);
+                startService(imgIntent);
+            }
+        }
         titleView = findViewById(R.id.titleView2);
         titleView.setText(title);
 
@@ -64,6 +141,35 @@ public class StatusActivity extends AppCompatActivity {
             titleView.setText(savedInstanceState.getString("getTitle"));
             msgView.setText(savedInstanceState.getString("getMessage"));
         }
+    }
+
+    public void startPlayer(View view) {
+        Log.d(LOG_TAG, "start");
+        MainActivity.verifyStoragePermissions(this);
+        Intent intent = new Intent(getBaseContext(), MusicService.class);
+        if(!isPlay) {
+            intent.putExtra("isPlay",true);
+            startService(intent);
+        }else{
+            stopService(intent);
+        }
+        isPlay = !isPlay;
+
+    }
+
+    public void pausePlayer(View view) {
+        Log.d(LOG_TAG, "pause");
+        MainActivity.verifyStoragePermissions(this);
+        Intent intent = new Intent(getBaseContext(), MusicService.class);
+        if(!isPause){
+            intent.putExtra("isPlay",true);
+            intent.putExtra("isPause",true);
+            startService(intent);
+        }else{
+            intent.putExtra("isPause",false);
+            startService(intent);
+        }
+        isPause = !isPause;
     }
 
     public void goBack(View view) {

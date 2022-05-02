@@ -23,4 +23,6 @@
     <string name="share_text_with">Share this text with:</string>
     <string name="tab_label1">全部动态</string>
     <string name="tab_label2">已关注用户动态</string>
+    <string name="image_url">https://e0.365dm.com/22/04/768x432/skysports-man-city-stapler_5752540.jpg?20220426203643</string>
+    <string name="image_loc">/storage/emulated/0/Pictures/download_tmp/tmp.png</string>
 </resources>

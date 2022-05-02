@@ -18,9 +18,10 @@ import java.util.LinkedList;
 
 public class TabFragment extends Fragment {
     private static final String LOG_TAG = TabFragment.class.getSimpleName();
+    private final LinkedList<String> statusTypeAll = new LinkedList<>();
     private final LinkedList<String> statusTitleAll = new LinkedList<>();
     private final LinkedList<String> statusMsgAll = new LinkedList<>();
-    private ArrayList<String> title_list_all, msg_list_all;
+    private ArrayList<String> type_list_all, title_list_all, msg_list_all;
     private RecyclerView status_all;
     private WordListAdapter mAdapter;
     private Button load_button;
@@ -34,25 +35,35 @@ public class TabFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_tab, container, false);
 
+        statusTypeAll.clear();
         statusTitleAll.clear();
         statusMsgAll.clear();
 
         Bundle extras = this.getArguments();
         if (extras != null) {
+            type_list_all = extras.getStringArrayList("EXTRA_TYPE");
             title_list_all = extras.getStringArrayList("EXTRA_TITLE");
             msg_list_all = extras.getStringArrayList("EXTRA_MESSAGE");
             for (int i = 0; i < 10; i++)
             {
+                statusTypeAll.addLast(type_list_all.get(i));
                 statusTitleAll.addLast(title_list_all.get(i));
                 statusMsgAll.addLast(msg_list_all.get(i));
             }
         }
+        statusTypeAll.addFirst("MUSIC");
+        statusTitleAll.addFirst("Music");
+        statusMsgAll.addFirst("This is a music.");
+
+        statusTypeAll.addFirst("VIDEO");
+        statusTitleAll.addFirst("Video");
+        statusMsgAll.addFirst("This is a video.");
 
         load_button = v.findViewById(R.id.load_button);
         load_button.setOnClickListener(this::loadMore);
 
         status_all = v.findViewById(R.id.recycle_all);
-        mAdapter = new WordListAdapter(getContext(), statusTitleAll, statusMsgAll);
+        mAdapter = new WordListAdapter(getContext(), statusTypeAll, statusTitleAll, statusMsgAll);
         status_all.setAdapter(mAdapter);
         LinearLayoutManager llm = new LinearLayoutManager((getContext()));
         status_all.setLayoutManager(llm);
@@ -73,6 +84,7 @@ public class TabFragment extends Fragment {
         int len = statusTitleAll.size();
         int count = 0;
         while (len + count < title_list_all.size()) {
+            statusTypeAll.addLast(type_list_all.get(len+count));
             statusTitleAll.addLast(title_list_all.get(len+count));
             statusMsgAll.addLast(msg_list_all.get(len+count));
             count++;

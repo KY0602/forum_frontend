@@ -10,31 +10,29 @@
         android:id="@+id/titleView2"
         android:layout_width="294dp"
         android:layout_height="60dp"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="64dp"
         android:background="@android:drawable/editbox_background"
         android:text="TextView"
         android:textAlignment="center"
         android:textSize="34sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintHorizontal_bias="0.452"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.072" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/url"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="26dp"
         android:clickable="true"
         android:drawablePadding="@dimen/cardview_compat_inset_shadow"
         android:textAlignment="center"
         android:textColor="@android:color/holo_blue_bright"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.304"
+        app:layout_constraintHorizontal_bias="0.413"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/msgView" />
 
@@ -42,15 +40,15 @@
         android:id="@+id/map"
         android:layout_width="wrap_content"
         android:layout_height="26dp"
-        android:layout_marginTop="48dp"
+        android:layout_marginBottom="52dp"
         android:clickable="true"
         android:textAlignment="center"
         android:textColor="@color/purple_200"
         android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.415"
-        app:layout_constraintStart_toEndOf="@+id/imageView3"
-        app:layout_constraintTop_toBottomOf="@+id/url" />
+        app:layout_constraintHorizontal_bias="0.413"
+        app:layout_constraintStart_toEndOf="@+id/imageView3" />
 
     <ImageButton
         android:id="@+id/share_button"
@@ -79,21 +77,22 @@
 
     <TextView
         android:id="@+id/msgView"
-        android:layout_width="289dp"
-        android:layout_height="341dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="283dp"
+        android:layout_height="89dp"
+        android:layout_marginTop="43dp"
         android:background="@android:drawable/editbox_background_normal"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.453"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/titleView2" />
+        app:layout_constraintTop_toBottomOf="@+id/image" />
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/msgView"
         app:srcCompat="@android:drawable/ic_dialog_info" />
@@ -103,9 +102,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="60dp"
-        android:layout_marginTop="44dp"
+        android:layout_marginBottom="52dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/url"
         app:srcCompat="@android:drawable/ic_dialog_map" />
 
     <ImageButton
@@ -127,5 +126,16 @@
         android:text="Back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/backButton" />
+
+    <ImageView
+        android:id="@+id/image"
+        android:layout_width="288dp"
+        android:layout_height="283dp"
+        android:layout_marginTop="28dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.43"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/titleView2"
+        app:srcCompat="@android:drawable/ic_menu_report_image" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

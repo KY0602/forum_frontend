@@ -20,6 +20,7 @@ public class WordListAdapter extends
         RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
 
     private static final String LOG_TAG = WordListAdapter.class.getSimpleName();
+    private final LinkedList<String> mTypeList;
     private final LinkedList<String> mWordList;
     private final LinkedList<String> mContentList;
     private final LayoutInflater mInflater;
@@ -49,8 +50,9 @@ public class WordListAdapter extends
         }
     }
 
-    public WordListAdapter(Context context, LinkedList<String> wordList, LinkedList<String> contentList) {
+    public WordListAdapter(Context context, LinkedList<String> typeList, LinkedList<String> wordList, LinkedList<String> contentList) {
         mInflater = LayoutInflater.from(context);
+        this.mTypeList = typeList;
         this.mWordList = wordList;
         this.mContentList = contentList;
     }
@@ -68,6 +70,7 @@ public class WordListAdapter extends
     public void onBindViewHolder(WordListAdapter.WordViewHolder holder,
                                  int position) {
         // Retrieve the data for that position.
+        String type = mTypeList.get(position);
         String title = mWordList.get(position);
         String msg = mContentList.get(position);
         // Add the data to the view holder.
@@ -78,6 +81,7 @@ public class WordListAdapter extends
                 activity = (AppCompatActivity)v.getContext();
                 Log.d(LOG_TAG, title);
                 Bundle extras = new Bundle();
+                extras.putString("EXTRA_TYPE", type);
                 extras.putString("EXTRA_TITLE", title);
                 extras.putString("EXTRA_MESSAGE", msg);
                 Intent intent  = new Intent(v.getContext(), StatusActivity.class);

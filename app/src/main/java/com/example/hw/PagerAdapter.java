@@ -11,8 +11,10 @@ import java.util.ArrayList;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
     private static final String LOG_TAG = PagerAdapter.class.getSimpleName();
+    private ArrayList<String> type_list_all = new ArrayList<String>();
     private ArrayList<String> title_list_all = new ArrayList<String>();
     private ArrayList<String> msg_list_all = new ArrayList<String>();
+    private ArrayList<String> type_list_followed = new ArrayList<String>();
     private ArrayList<String> title_list_followed = new ArrayList<String>();
     private ArrayList<String> msg_list_followed = new ArrayList<String>();
     int mNumOfTabs;
@@ -23,15 +25,18 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         this.mNumOfTabs = NumOfTabs;
         for (int i = 1; i < 51; i++) {
             if (i < 26) {
+                type_list_followed.add("TEXT");
                 title_list_followed.add("Message " + i);
                 msg_list_followed.add("This is Message " + i);
             }
+            type_list_all.add("TEXT");
             title_list_all.add("Message " + i);
             msg_list_all.add("This is Message " + i);
         }
     }
 
     public void addStatus(String title, String msg) {
+        type_list_all.add(0, "TEXT");
         title_list_all.add(0, title);
         msg_list_all.add(0, msg);
     }
@@ -40,8 +45,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         Bundle extras_all = new Bundle();
         Bundle extras_followed = new Bundle();
+        extras_all.putStringArrayList("EXTRA_TYPE", type_list_all);
         extras_all.putStringArrayList("EXTRA_TITLE", title_list_all);
         extras_all.putStringArrayList("EXTRA_MESSAGE", msg_list_all);
+        extras_followed.putStringArrayList("EXTRA_TYPE", type_list_all);
         extras_followed.putStringArrayList("EXTRA_TITLE", title_list_followed);
         extras_followed.putStringArrayList("EXTRA_MESSAGE", msg_list_followed);
         switch (position) {
