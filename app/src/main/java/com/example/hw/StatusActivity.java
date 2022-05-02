@@ -95,6 +95,7 @@ public class StatusActivity extends AppCompatActivity {
         } else if (type.equals("VIDEO")) {
             Log.d(LOG_TAG, "Video");
             setContentView(R.layout.activity_status_video);
+            MainActivity.verifyStoragePermissions(this);
 
             VideoView videoView = findViewById(R.id.videoView);
             MediaController mediaController = new MediaController(this);
