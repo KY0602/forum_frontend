@@ -30,7 +30,7 @@
         android:theme="@style/Theme.HW"
         android:requestLegacyExternalStorage="true">
         <activity
-            android:name=".StatusActivity"
+            android:name=".Home.Status.StatusActivity"
             android:exported="false"
             android:screenOrientation="portrait"/>
         <activity
@@ -45,8 +45,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".ImageService" />
-        <service android:name=".MusicService" />
+        <service android:name=".Home.Status.ImageService" />
+        <service android:name=".Home.Status.MusicService" />
+        <service android:name=".Home.Status.VideoService" />
     </application>
 
 </manifest>

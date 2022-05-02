@@ -1,24 +1,29 @@
-package com.example.hw;
+package com.example.hw.Home.Status;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ShareCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.IBinder;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.MediaController;
 import android.widget.TextView;
-import android.widget.VideoView;
+
+import com.example.hw.MainActivity;
+import com.example.hw.R;
 
 import java.io.File;
 
@@ -27,11 +32,19 @@ public class StatusActivity extends AppCompatActivity {
     private TextView titleView, msgView, urlText, mapText;
     private ImageButton shareButton, backButton;
     private ImageView imageView;
+    private Button startButton, pauseButton;
 
     // For audio
-    private Button startButton, pauseButton;
-    boolean isPlay = false;
-    boolean isPause = false;
+    boolean isPlay_audio = false;
+    boolean isPause_audio = false;
+
+    // For video
+    public SurfaceView surfaceView;
+    public SurfaceHolder holder;
+    private VideoService videoService;
+    private boolean bounded = false;
+    boolean isPlay_video = false;
+    boolean isPause_video = false;
 
     @Override
     protected void onStart() {
@@ -75,6 +88,23 @@ public class StatusActivity extends AppCompatActivity {
         }
     };
 
+    // To get an instance of VideoService
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            VideoService.VideoBinder videoBinder = (VideoService.VideoBinder) iBinder;
+            videoService = videoBinder.getService();
+            bounded = true;
+            Log.d(LOG_TAG, "Service Connected");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            Log.d(LOG_TAG, "Service disconnected");
+            bounded = false;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -84,33 +114,38 @@ public class StatusActivity extends AppCompatActivity {
         String type = extras.getString("EXTRA_TYPE");
         String title = extras.getString("EXTRA_TITLE");
         String msg = extras.getString("EXTRA_MESSAGE");
+
+        // 3 Types of contents
         if (type.equals("MUSIC")) {
             Log.d(LOG_TAG, "Music");
             setContentView(R.layout.activity_status_music);
             startButton = findViewById(R.id.start);
-            startButton.setOnClickListener(this::startPlayer);
+            startButton.setOnClickListener(this::startMusicPlayer);
 
             pauseButton = findViewById(R.id.pause);
-            pauseButton.setOnClickListener(this::pausePlayer);
+            pauseButton.setOnClickListener(this::pauseMusicPlayer);
         } else if (type.equals("VIDEO")) {
             Log.d(LOG_TAG, "Video");
             setContentView(R.layout.activity_status_video);
             MainActivity.verifyStoragePermissions(this);
 
-            VideoView videoView = findViewById(R.id.videoView);
-            MediaController mediaController = new MediaController(this);
-            mediaController.setAnchorView(videoView);
-            Uri uri = Uri.parse(Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Movies/nevergonna.mp4");
-            videoView.setMediaController(mediaController);
-            videoView.setVideoURI(uri);
-            videoView.requestFocus();
-            videoView.start();
-        }
-        else {
+            surfaceView = findViewById(R.id.surfaceView);
+            holder = surfaceView.getHolder();
+
+            Intent videoIntent = new Intent(this, VideoService.class);
+            bindService(videoIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+
+            startButton = findViewById(R.id.start);
+            startButton.setOnClickListener(this::startVideoPlayer);
+
+            pauseButton = findViewById(R.id.pause);
+            pauseButton.setOnClickListener(this::pauseVideoPlayer);
+        } else {
             setContentView(R.layout.activity_status);
             imageView = findViewById(R.id.image);
 
             File imgFile = new File(getResources().getString(R.string.image_loc));
+            // If image does not exist, start a service to download
             if (imgFile.exists()) {
                 imageView.setImageURI(Uri.fromFile(imgFile));
             } else {
@@ -144,33 +179,63 @@ public class StatusActivity extends AppCompatActivity {
         }
     }
 
-    public void startPlayer(View view) {
-        Log.d(LOG_TAG, "start");
+    public void startMusicPlayer(View view) {
         MainActivity.verifyStoragePermissions(this);
         Intent intent = new Intent(getBaseContext(), MusicService.class);
-        if(!isPlay) {
+        if (!isPlay_audio) {
             intent.putExtra("isPlay",true);
             startService(intent);
-        }else{
+        } else {
             stopService(intent);
         }
-        isPlay = !isPlay;
-
+        isPlay_audio = !isPlay_audio;
     }
 
-    public void pausePlayer(View view) {
-        Log.d(LOG_TAG, "pause");
+    public void pauseMusicPlayer(View view) {
         MainActivity.verifyStoragePermissions(this);
         Intent intent = new Intent(getBaseContext(), MusicService.class);
-        if(!isPause){
+        if (!isPause_audio) {
             intent.putExtra("isPlay",true);
             intent.putExtra("isPause",true);
             startService(intent);
-        }else{
+        } else {
             intent.putExtra("isPause",false);
             startService(intent);
         }
-        isPause = !isPause;
+        isPause_audio = !isPause_audio;
+    }
+
+    public void startVideoPlayer(View view) {
+        Intent videoIntent = new Intent(this, VideoService.class);
+        if (bounded) {
+            videoService.mediaPlayer.setDisplay(holder);
+            if (!isPlay_video) {
+                videoIntent.putExtra("isPlay",true);
+                videoIntent.putExtra("isRestart", true);
+                startService(videoIntent);
+            } else {
+                videoIntent.putExtra("isPlay",true);
+                videoIntent.putExtra("isPause",true);
+                startService(videoIntent);
+            }
+            isPlay_video = !isPlay_video;
+        }
+    }
+
+    public void pauseVideoPlayer(View view) {
+        Intent videoIntent = new Intent(this, VideoService.class);
+        if (bounded) {
+            videoService.mediaPlayer.setDisplay(holder);
+            if (!isPause_video) {
+                videoIntent.putExtra("isPlay",true);
+                videoIntent.putExtra("isPause",true);
+                startService(videoIntent);
+            } else {
+                videoIntent.putExtra("isPause",false);
+                startService(videoIntent);
+            }
+            isPause_video = !isPause_video;
+        }
     }
 
     public void goBack(View view) {

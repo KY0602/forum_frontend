@@ -1,4 +1,4 @@
-package com.example.hw;
+package com.example.hw.Post;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -12,6 +12,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+
+import com.example.hw.MainActivity;
+import com.example.hw.R;
 
 public class PostFragment extends Fragment implements View.OnClickListener {
     private static final String LOG_TAG = PostFragment.class.getSimpleName();

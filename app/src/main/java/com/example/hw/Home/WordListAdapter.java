@@ -1,9 +1,8 @@
-package com.example.hw;
+package com.example.hw.Home;
 
 import android.content.Context;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
@@ -13,6 +12,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.example.hw.R;
+import com.example.hw.Home.Status.StatusActivity;
 
 import java.util.LinkedList;
 

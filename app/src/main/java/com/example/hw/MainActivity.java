@@ -3,21 +3,21 @@ package com.example.hw;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.renderscript.ScriptGroup;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
 
+import com.example.hw.Home.HomeFragment;
+import com.example.hw.Post.PostFragment;
+import com.example.hw.Profile.ProfileFragment;
+import com.example.hw.Search.SearchFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-
-import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity{

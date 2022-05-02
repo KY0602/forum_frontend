@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".TabFragment">
+    tools:context=".Home.TabFragment">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycle_all"

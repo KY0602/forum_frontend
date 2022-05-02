@@ -1,4 +1,4 @@
-package com.example.hw;
+package com.example.hw.Profile;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +12,8 @@ import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+
+import com.example.hw.R;
 
 public class ProfileFragment extends Fragment implements View.OnClickListener {
     private static final String LOG_TAG = ProfileFragment.class.getSimpleName();

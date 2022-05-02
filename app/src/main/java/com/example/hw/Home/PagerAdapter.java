@@ -1,4 +1,4 @@
-package com.example.hw;
+package com.example.hw.Home;
 
 import android.os.Bundle;
 import android.util.Log;

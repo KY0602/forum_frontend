@@ -1,4 +1,4 @@
-package com.example.hw;
+package com.example.hw.Search;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +11,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+
+import com.example.hw.R;
 
 public class SearchFragment extends Fragment implements View.OnClickListener {
     private static final String LOG_TAG = SearchFragment.class.getSimpleName();

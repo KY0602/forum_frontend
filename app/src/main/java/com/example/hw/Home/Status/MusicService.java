@@ -1,32 +1,21 @@
-package com.example.hw;
+package com.example.hw.Home.Status;
 
-import android.Manifest;
-import android.app.Activity;
 import android.app.Service;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
-import android.provider.MediaStore;
 import android.util.Log;
-
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
-import java.io.File;
-import java.io.IOException;
 
 
 public class MusicService extends Service {
 
     private static final String LOG_TAG = MusicService.class.getSimpleName();
-    //media player
+    // Media player
     private MediaPlayer mediaPlayer;
-    //Used to pause/resume MediaPlayer
+    // Used to pause/resume MediaPlayer
     private int resumePosition;
 
     private MusicBinder mBinder = new MusicBinder();
@@ -65,13 +54,11 @@ public class MusicService extends Service {
     }
 
     @Override
-    // TODO
     public void onCreate(){
         super.onCreate();
-        //create player
+        // Create player
         mediaPlayer = new MediaPlayer();
         String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/Music/nevergonna.mp3";
-        // mediaPlayer = MediaPlayer.create(this,R.raw.wonderwall);
 
         try {
             mediaPlayer.setDataSource(this, Uri.parse(path));
@@ -83,7 +70,6 @@ public class MusicService extends Service {
     }
 
     @Override
-    // TODO
     public void onDestroy() {
         super.onDestroy();
         if (mediaPlayer != null) {
