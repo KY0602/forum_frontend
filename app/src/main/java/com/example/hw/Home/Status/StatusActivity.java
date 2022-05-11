@@ -80,7 +80,7 @@ public class StatusActivity extends AppCompatActivity {
         super.onResume();
     }
 
-    // 图片下载完成时，将本地存储的图片放到imageView中
+    // 图片下载完成时，将本地存储的图片添加到imageView中
     // Our handler for received Intents. This will be called whenever an Intent
     // with an action named "IMAGE-DOWNLOADED" is broadcast.
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver(){
