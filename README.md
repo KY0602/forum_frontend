@@ -1,13 +1,19 @@
 # 代码模块介绍
 ## 主模块
-- MainActivity.java，activity_main.xml : 初始化各个fragment
-- BottomBarAdapter.java，SmartFragmentStatePagerAdapter.java : 底部导航（Bottom Navigation）和fragment的adapter，应该不需要修改
+- MainActivity.java，activity_main.xml : 
+  - 初始化各个fragment
+- BottomBarAdapter.java，SmartFragmentStatePagerAdapter.java : 
+  - 底部导航（Bottom Navigation）和fragment的adapter，应该不需要修改
 
 ## 动态列表页面（Home)
-- HomeFragment.java，fragment_home.xml : 动态页面的主要部分
-- PagerAdapter.java : Tab的adapter，初始化时创建动态（连后端的话，可能要在这里获取动态列表），通过setArguments将动态传给Tab
-- TabFragment.java，fragment_tab.xml : Tab组件，“所有用户动态”和“已关注用户动态”都属于这个类，通过getArguments获取动态列表
-- WordListAdapter.java，wordlist_item.xml : RecyclerView的adapter，在这里处理RecyclerView的设计（？），onBindViewHolder处理点击动态后的跳转
+- HomeFragment.java，fragment_home.xml : 
+  - 动态页面的主要部分
+- PagerAdapter.java : 
+  - Tab的adapter，初始化时创建动态（连后端的话，可能要在这里获取动态列表），通过setArguments将动态传给Tab
+- TabFragment.java，fragment_tab.xml : 
+  - Tab组件，“所有用户动态”和“已关注用户动态”都属于这个类，通过getArguments获取动态列表
+- WordListAdapter.java，wordlist_item.xml : 
+  - RecyclerView的adapter，在这里处理RecyclerView的设计（？），onBindViewHolder处理点击动态后的跳转
 
 ### 动态页面（Status）
 - StatusActivity.java，activity_status.xml，activity_status_music.xml，activity_status_video.xml : 
