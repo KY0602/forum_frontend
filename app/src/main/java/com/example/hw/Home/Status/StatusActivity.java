@@ -52,6 +52,7 @@ public class StatusActivity extends AppCompatActivity {
         Log.d(LOG_TAG, "onStart");
     }
 
+    // 保存状态，实际不需要
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -59,6 +60,7 @@ public class StatusActivity extends AppCompatActivity {
         outState.putString("getMessage", msgView.getText().toString());
     }
 
+    // Pause时unregister receiver，用以图片下载完成时通知
     @Override
     protected void onPause() {
         // Unregister since the activity is paused.
@@ -67,6 +69,7 @@ public class StatusActivity extends AppCompatActivity {
         super.onPause();
     }
 
+    // Resume时register receiver，会捕捉到"IMAGE-DOWNLOADED"的broadcast，用以图片下载完成时通知
     @Override
     protected void onResume() {
         // Register to receive messages.
@@ -77,6 +80,7 @@ public class StatusActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    // 图片下载完成时，将本地存储的图片放到imageView中
     // Our handler for received Intents. This will be called whenever an Intent
     // with an action named "IMAGE-DOWNLOADED" is broadcast.
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver(){
@@ -88,6 +92,7 @@ public class StatusActivity extends AppCompatActivity {
         }
     };
 
+    // 用以视频播放的service
     // To get an instance of VideoService
     private ServiceConnection serviceConnection = new ServiceConnection() {
         @Override
@@ -115,6 +120,7 @@ public class StatusActivity extends AppCompatActivity {
         String title = extras.getString("EXTRA_TITLE");
         String msg = extras.getString("EXTRA_MESSAGE");
 
+        // 通过intent传入的type判断需要执行什么
         // 3 Types of contents
         if (type.equals("MUSIC")) {
             Log.d(LOG_TAG, "Music");

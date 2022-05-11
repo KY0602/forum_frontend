@@ -52,6 +52,7 @@ public class WordListAdapter extends
         }
     }
 
+    // 初始化时读入动态列表
     public WordListAdapter(Context context, LinkedList<String> typeList, LinkedList<String> wordList, LinkedList<String> contentList) {
         mInflater = LayoutInflater.from(context);
         this.mTypeList = typeList;
@@ -68,6 +69,7 @@ public class WordListAdapter extends
         return new WordViewHolder(mItemView, this);
     }
 
+    // 当点击时启动“动态详情”的Activity
     @Override
     public void onBindViewHolder(WordListAdapter.WordViewHolder holder,
                                  int position) {

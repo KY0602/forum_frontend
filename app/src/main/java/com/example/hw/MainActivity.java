@@ -88,6 +88,7 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
+    // PostFragment调用switchHome来添加动态
     public void switchHome(String title, String msg) {
         InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
         if (imm.isActive()) {
@@ -97,6 +98,7 @@ public class MainActivity extends AppCompatActivity{
         viewPagerMain.setCurrentItem(0, false);
     }
 
+    // 读取图片、视频、音频前需要调用verifyStoragePermissions来检查权限和获取权限
     public static void verifyStoragePermissions(Activity activity) {
         Log.d(LOG_TAG, "permission");
         // Check if we have write permission

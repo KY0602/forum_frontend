@@ -23,7 +23,7 @@ public class HomeFragment extends Fragment {
         // require a empty public constructor
     }
 
-    // Save state
+    // 保存状态
     @Override
     public void onSaveInstanceState(final Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -32,7 +32,7 @@ public class HomeFragment extends Fragment {
         Log.d(LOG_TAG, "Save");
     }
 
-    // Restore saved state
+    // 恢复状态
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -91,6 +91,7 @@ public class HomeFragment extends Fragment {
         return v;
     }
 
+    // MainActivity会调用addStatus来添加动态
     public void addStatus(String title, String msg) {
         if (adapter != null) {
             title_list.add(0, title);

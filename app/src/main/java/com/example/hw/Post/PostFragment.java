@@ -58,6 +58,7 @@ public class PostFragment extends Fragment implements View.OnClickListener {
         return v;
     }
 
+    // 保存草稿，只能保存一个
     public void saveDraft() {
         SharedPreferences.Editor editor = pref.edit();
         String title = postTitle.getText().toString();
@@ -68,6 +69,7 @@ public class PostFragment extends Fragment implements View.OnClickListener {
 //        Toast.makeText(getActivity().getApplicationContext(), "草稿保存成功", Toast.LENGTH_SHORT).show();
     }
 
+    // 打开页面时，读入草稿
     public void loadDraft() {
         if (pref.contains("TITLE") || pref.contains("MESSAGE")) {
 //            Toast.makeText(getActivity().getApplicationContext(), "草稿加载成功", Toast.LENGTH_SHORT).show();
@@ -111,6 +113,7 @@ public class PostFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    // 用以在点击“发布”后跳转到动态列表页面，通过switchHome来添加动态
     private void switchContent(String title, String msg) {
         if (activity == null) {
             return;

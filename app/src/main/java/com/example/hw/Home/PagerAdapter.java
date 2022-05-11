@@ -19,6 +19,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
     private ArrayList<String> msg_list_followed = new ArrayList<String>();
     int mNumOfTabs;
 
+    // 初始化时创建动态列表，连后端的话可以考虑在这里从后端获取动态列表，再保存到ArrayList当中
     public PagerAdapter(FragmentManager fm, int NumOfTabs) {
         super(fm);
         Log.d(LOG_TAG, "Pager created");
@@ -35,12 +36,14 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         }
     }
 
+    // HomeFragment中调用addStatus来添加动态
     public void addStatus(String title, String msg) {
         type_list_all.add(0, "TEXT");
         title_list_all.add(0, title);
         msg_list_all.add(0, msg);
     }
 
+    // 通过setArguments的方法，将之前获取的动态列表传给两个tab(all, followed)
     @Override
     public Fragment getItem(int position) {
         Bundle extras_all = new Bundle();

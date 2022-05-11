@@ -31,6 +31,7 @@ public class TabFragment extends Fragment {
         // require a empty public constructor
     }
 
+    // 通过getArguments从PagerAdapter获取动态列表，此处MUSIC和VIDEO只是为了测试音频和视频而写死两个动态
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -69,6 +70,7 @@ public class TabFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager((getContext()));
         status_all.setLayoutManager(llm);
 
+        // 划到最底时会调用loadMore显示更多动态
         status_all.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
@@ -81,6 +83,7 @@ public class TabFragment extends Fragment {
         return v;
     }
 
+    // 当点击“加载更多”按钮或划到最底时调用loadMore显示更多动态
     private void loadMore(View view) {
         int len = statusTitleAll.size();
         int count = 0;
