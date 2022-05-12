@@ -1,5 +1,7 @@
 # 代码模块介绍
 ## 主模块
+- LoginActivity.java, RegisterActivity.java, activity_login.xml, activity_register.xml :
+  - 注册、登录相关
 - MainActivity.java，activity_main.xml : 
   - 初始化各个fragment
 - BottomBarAdapter.java，SmartFragmentStatePagerAdapter.java : 
