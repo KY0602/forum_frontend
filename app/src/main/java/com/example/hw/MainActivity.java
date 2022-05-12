@@ -7,11 +7,13 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 import com.example.hw.Home.HomeFragment;
 import com.example.hw.Post.PostFragment;
@@ -29,6 +31,7 @@ public class MainActivity extends AppCompatActivity{
     PostFragment postFragment = new PostFragment();
     SearchFragment searchFragment = new SearchFragment();
     ProfileFragment profileFragment = new ProfileFragment();
+    public String user_id;
 
     // Storage Permissions
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
@@ -41,6 +44,11 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Intent intent = getIntent();
+        user_id = intent.getStringExtra("user_id");
+        Toast.makeText(this, "登录成功", Toast.LENGTH_LONG).show();
+        Log.d(LOG_TAG, user_id);
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         viewPagerMain = findViewById(R.id.viewPagerMain);
