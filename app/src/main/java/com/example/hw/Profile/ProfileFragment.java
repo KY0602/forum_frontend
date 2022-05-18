@@ -125,12 +125,14 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                             profile_pic_user = jObject.getString("profile_photo");
                             Log.d(LOG_TAG, profile_pic_user);
 
+
                             activity.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
                                     username.setText(username_user);
                                     email.setText(email_user);
-                                    description.setText(desc_user);
+
+                                    if (!desc_user.equals("null")) description.setText(desc_user);
 
                                     // Download image, start ImageService to download pic if image does not already exist
                                     if (!profile_pic_user.equals("null")) {
