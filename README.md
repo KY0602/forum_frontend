@@ -21,7 +21,9 @@
 - StatusActivity.java，activity_status.xml，activity_status_music.xml，activity_status_video.xml : 
   - 动态详情页面的主要部分，通过intent获取动态详情，目前是会根据传入的type判断是属于纯文字、图片、音频或视频，继而调用不同的xml
 - ImageService.java : 
-  - 下载网络图片的service，会将网络图片保存到Pictures/download_tmp里，网址和文件名目前都是写死的，下载完成后会向StatusActivity发送Broadcast，接收到后再读取图片放到界面中
+  - 需传入参数image_type(profile/status)和image_name
+  - 会将网络图片保存到Pictures/download_tmp里，下载完成后会向StatusActivity发送Broadcast，接收到后再读取图片放到界面中
+  - 目前的版本中会从后端下载一个图片（图片名写死为tmp.jpg)，使用时需在电脑本地（与后端代码同一个drive）中创建Downloads/temp/upload/image文件夹，并往里头放一张tmp.jpg图片
 - MusicService.java :
   - 音乐播放器的service，目前是从本地（/Music)读取音频文件（写死为nevergonna.mp3)，然后通过MediaPlayer播放
 - VideoService.java :
@@ -37,4 +39,6 @@
 - SearchFragement.java, fragment_search.xml : 目前还没有实际功能
 
 ## 个人页面（Profile)
-- ProfileFragment.java, fragment_profile.xml : 目前还没有实际功能
+- ProfileFragment.java, fragment_profile.xml : 
+  - 从后端提取个人信息（用户名、邮箱、简介、头像）
+  - 头像下载与展示方法与动态图片一样，若文件不存在则启动ImageService下载到本地（download_tmp)，否则直接读取先前保存的即可
