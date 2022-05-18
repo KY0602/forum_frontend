@@ -87,7 +87,7 @@ public class StatusActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(LOG_TAG, "Image downloaded");
-            File imgFile = new File("/storage/emulated/0/Pictures/download_tmp/tmp.png");
+            File imgFile = new File(getResources().getString(R.string.image_loc) + "tmp.jpg");
             imageView.setImageURI(Uri.fromFile(imgFile));
         }
     };
@@ -150,12 +150,14 @@ public class StatusActivity extends AppCompatActivity {
             setContentView(R.layout.activity_status);
             imageView = findViewById(R.id.image);
 
-            File imgFile = new File(getResources().getString(R.string.image_loc));
+            File imgFile = new File(getResources().getString(R.string.image_loc) + "tmp.jpg");
             // If image does not exist, start a service to download
             if (imgFile.exists()) {
                 imageView.setImageURI(Uri.fromFile(imgFile));
             } else {
                 Intent imgIntent = new Intent(getBaseContext(), ImageService.class);
+                imgIntent.putExtra("image_type", "status");
+                imgIntent.putExtra("image_name", "tmp.jpg");
                 startService(imgIntent);
             }
         }

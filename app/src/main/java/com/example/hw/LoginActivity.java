@@ -103,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                         boolean status = jObject.getBoolean("status");
                         if (status) {
                             String user_id = jObject.getString("user_id");
+                            Log.d(LOG_TAG, user_id);
                             saveUserInfo(user_id);
                             Intent intent = new Intent(v.getContext(), MainActivity.class);
                             intent.putExtra("user_id", user_id);

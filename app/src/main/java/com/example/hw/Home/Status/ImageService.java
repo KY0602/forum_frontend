@@ -27,7 +27,7 @@ public class ImageService extends Service{
 
     private Looper mServiceLooper;
     private ServiceHandler mServiceHandler;
-    String downloadUrl;
+    String downloadUrl, image_name;
     public static boolean serviceState=false;
 
     // Handler that receives messages from the thread
@@ -57,8 +57,17 @@ public class ImageService extends Service{
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(LOG_TAG,"onStartCommand");
 
-        String downloadUrl = getResources().getString(R.string.image_url);
-        this.downloadUrl = downloadUrl;
+        String image_type = intent.getStringExtra("image_type");
+        image_name = intent.getStringExtra("image_name");
+        String image_url;
+
+        if (image_type.equals("profile")) {
+            image_url = "http://192.168.1.10:8000/profile-pic/" + image_name;
+        } else {
+            image_url = "http://192.168.1.10:8000/image/" + image_name;
+        }
+
+        this.downloadUrl = image_url;
 
         Message msg = mServiceHandler.obtainMessage();
         msg.arg1 = startId;
@@ -81,7 +90,7 @@ public class ImageService extends Service{
     }
 
     public void downloadFile(){
-        downloadFile(this.downloadUrl, "tmp.png");
+        downloadFile(this.downloadUrl, this.image_name);
     }
 
     public void downloadFile(String fileURL, String fileName) {

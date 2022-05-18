@@ -25,10 +25,9 @@
 
     <ImageView
         android:id="@+id/profilePic"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="105dp"
+        android:layout_height="96dp"
         android:layout_marginStart="36dp"
-        android:background="@drawable/circle_border"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.418"
@@ -38,7 +37,7 @@
         app:srcCompat="@drawable/person" />
 
     <TextView
-        android:id="@+id/profileName"
+        android:id="@+id/usernameLabel"
         android:layout_width="90dp"
         android:layout_height="30dp"
         android:layout_marginStart="16dp"
@@ -50,56 +49,31 @@
         app:layout_constraintTop_toBottomOf="@+id/profilePic" />
 
     <TextView
-        android:id="@+id/profileGender"
+        android:id="@+id/emailLabel"
         android:layout_width="90dp"
         android:layout_height="30dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:text="性别"
+        android:layout_marginTop="30dp"
+        android:text="邮箱"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileName" />
+        app:layout_constraintTop_toBottomOf="@+id/usernameLabel" />
 
     <TextView
-        android:id="@+id/profileAge"
-        android:layout_width="90dp"
-        android:layout_height="30dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
-        android:text="年龄"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileGender" />
-
-    <TextView
-        android:id="@+id/profileDesc"
+        android:id="@+id/profileDescLabel"
         android:layout_width="133dp"
         android:layout_height="34dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="30dp"
         android:text="简介"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileAge" />
+        app:layout_constraintTop_toBottomOf="@+id/emailLabel" />
 
     <EditText
-        android:id="@+id/profileName2"
-        android:layout_width="211dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="16dp"
-        android:hint="用户名"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profileName"
-        app:layout_constraintTop_toBottomOf="@+id/profilePic" />
-
-    <EditText
-        android:id="@+id/profileDesc2"
+        android:id="@+id/profileDesc"
         android:layout_width="344dp"
         android:layout_height="206dp"
         android:layout_marginStart="16dp"
@@ -107,69 +81,41 @@
         android:layout_marginEnd="16dp"
         android:background="@android:drawable/editbox_background"
         android:gravity="start|top"
-        android:hint="简介"
         android:inputType="textMultiLine"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.057"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileDesc" />
-
-    <EditText
-        android:id="@+id/profileAge2"
-        android:layout_width="211dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
-        android:ems="10"
-        android:hint="年龄"
-        android:inputType="number"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profileAge"
-        app:layout_constraintTop_toBottomOf="@+id/radioGroupGender" />
-
-    <RadioGroup
-        android:id="@+id/radioGroupGender"
-        android:layout_width="211dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/profileGender"
-        app:layout_constraintTop_toBottomOf="@+id/profileName2">
-
-        <RadioButton
-            android:id="@+id/radioMale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="男"
-            android:textColor="#ff6d6e71" />
-
-        <RadioButton
-            android:id="@+id/radioFemale"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="false"
-            android:text="女"
-            android:textColor="#ff6d6e71"
-            android:textSize="14dp" />
-    </RadioGroup>
+        app:layout_constraintTop_toBottomOf="@+id/profileDescLabel" />
 
     <Button
         android:id="@+id/saveButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:text="保存"
+        android:text="修改个人信息"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileDesc2" />
+        app:layout_constraintTop_toBottomOf="@+id/profileDesc" />
+
+    <TextView
+        android:id="@+id/username"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="24dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/usernameLabel"
+        app:layout_constraintTop_toBottomOf="@+id/profilePic" />
+
+    <TextView
+        android:id="@+id/email"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="36dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/emailLabel"
+        app:layout_constraintTop_toBottomOf="@+id/username" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
