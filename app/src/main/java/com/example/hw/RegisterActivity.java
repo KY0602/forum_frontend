@@ -63,7 +63,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
 
         String jsonStr = "{\"username\":\""+ username + "\",\"password\":\""+ password + "\",\"email\":\""+ email +"\"}";
-        String requestUrl = "http://192.168.1.10:8000/register";
+        String requestUrl = getResources().getString(R.string.backend_url) + "register";
 
         try{
             OkHttpClient client = new OkHttpClient();

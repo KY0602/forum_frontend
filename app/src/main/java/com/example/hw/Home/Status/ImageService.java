@@ -62,9 +62,9 @@ public class ImageService extends Service{
         String image_url;
 
         if (image_type.equals("profile")) {
-            image_url = "http://192.168.1.10:8000/profile-pic/" + image_name;
+            image_url = getResources().getString(R.string.backend_url) + "profile-pic/" + image_name;
         } else {
-            image_url = "http://192.168.1.10:8000/image/" + image_name;
+            image_url = getResources().getString(R.string.backend_url) + "image/" + image_name;
         }
 
         this.downloadUrl = image_url;

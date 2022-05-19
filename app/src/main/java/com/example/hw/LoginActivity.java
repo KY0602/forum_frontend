@@ -81,7 +81,7 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         String jsonStr = "{\"email\":\""+ email + "\",\"password\":\""+ password +"\"}";
-        String requestUrl = "http://192.168.1.10:8000/login";
+        String requestUrl = getResources().getString(R.string.backend_url) + "login";
 
         try{
             OkHttpClient client = new OkHttpClient();

@@ -98,7 +98,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         profile_pic = v.findViewById(R.id.profilePic);
 
         String jsonStr = "{\"user_id\":\""+ user_id + "\"}";
-        String requestUrl = "http://192.168.1.10:8000/query-userinfo";
+        String requestUrl = getResources().getString(R.string.backend_url) + "query-userinfo";
 
         try{
             OkHttpClient client = new OkHttpClient();
