@@ -88,6 +88,14 @@ public class RegisterActivity extends AppCompatActivity {
                             LoginActivity.saveUserInfo(user_id);
                             Intent intent = new Intent(v.getContext(), MainActivity.class);
                             intent.putExtra("user_id", user_id);
+
+                            RegisterActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(v.getContext(), "登录成功", Toast.LENGTH_LONG).show();
+                                }
+                            });
+
                             v.getContext().startActivity(intent);
                         } else {
                             String message = jObject.getString("message");

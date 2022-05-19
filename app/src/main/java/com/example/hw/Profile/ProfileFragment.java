@@ -1,12 +1,10 @@
 package com.example.hw.Profile;
 
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,10 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,7 +21,6 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.hw.Home.Status.ImageService;
-import com.example.hw.LoginActivity;
 import com.example.hw.MainActivity;
 import com.example.hw.R;
 
@@ -36,9 +30,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -53,7 +44,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private AppCompatActivity activity;
     TextView username, email, description;
     ImageView profile_pic;
-    String user_id, profile_pic_user;
+    Button editProfileButton;
+    String user_id, profile_pic_user, username_user, desc_user;
+    int EDIT_USER_INFO = 400;
 
     public ProfileFragment(){
         // require a empty public constructor
@@ -97,6 +90,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         description = v.findViewById(R.id.profileDesc);
         profile_pic = v.findViewById(R.id.profilePic);
 
+        editProfileButton = v.findViewById(R.id.editProfileButton);
+        editProfileButton.setOnClickListener(this);
+
         String jsonStr = "{\"user_id\":\""+ user_id + "\"}";
         String requestUrl = getResources().getString(R.string.backend_url) + "query-userinfo";
 
@@ -119,9 +115,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                         JSONObject jObject = new JSONObject(responseStr);
                         boolean status = jObject.getBoolean("status");
                         if (status) {
-                            String username_user = jObject.getString("username");
+                            username_user = jObject.getString("username");
                             String email_user = jObject.getString("email");
-                            String desc_user = jObject.getString("description");
+                            desc_user = jObject.getString("description");
                             profile_pic_user = jObject.getString("profile_photo");
                             Log.d(LOG_TAG, profile_pic_user);
 
@@ -172,7 +168,59 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     }
 
     @Override
-    public void onClick(View view) {
-        return;
+    public void onClick(View v) {
+        switch(v.getId()) {
+            case R.id.editProfileButton:
+                Log.d(LOG_TAG, "Edit");
+
+                Intent intent = new Intent(getActivity(), EditProfileActivity.class);
+
+                Bundle extras = new Bundle();
+                extras.putString("user_id", this.user_id);
+                extras.putString("username", this.username_user);
+                extras.putString("description", this.desc_user);
+                extras.putString("profile_pic", this.profile_pic_user);
+
+                intent.putExtras(extras);
+                startActivityForResult(intent, EDIT_USER_INFO);
+                break;
+            default:
+                Log.d(LOG_TAG, "No match");
+                break;
+        }
+    }
+
+    // After receiving updated user info from EditProfileActivity
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == EDIT_USER_INFO) {
+                Log.d(LOG_TAG, "return");
+                Bundle extras = data.getExtras();
+
+                username_user = extras.getString("username");
+                desc_user = extras.getString("description");
+                profile_pic_user = extras.getString("profile_pic");
+                Log.d(LOG_TAG, profile_pic_user);
+
+                username.setText(username_user);
+                description.setText(desc_user);
+
+                // Download image, start ImageService to download pic if image does not already exist
+                if (!profile_pic_user.equals("null")) {
+                    File imgFile = new File(getResources().getString(R.string.image_loc) + profile_pic_user);
+                    if (imgFile.exists()) {
+                        profile_pic.setImageURI(Uri.fromFile(imgFile));
+                    } else {
+                        Intent imgIntent = new Intent(activity, ImageService.class);
+                        imgIntent.putExtra("image_type", "profile");
+                        imgIntent.putExtra("image_name", profile_pic_user);
+                        activity.startService(imgIntent);
+                    }
+                }
+            }
+        }
     }
 }

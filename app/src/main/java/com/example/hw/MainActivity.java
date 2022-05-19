@@ -47,7 +47,6 @@ public class MainActivity extends AppCompatActivity{
 
         Intent intent = getIntent();
         user_id = intent.getStringExtra("user_id");
-        Toast.makeText(this, "登录成功", Toast.LENGTH_LONG).show();
         Log.d(LOG_TAG, user_id);
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
