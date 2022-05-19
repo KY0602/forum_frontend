@@ -10,6 +10,7 @@
 ## 动态列表页面（Home)
 - HomeFragment.java，fragment_home.xml : 
   - 动态页面的主要部分
+  - 登录后会将user_id传过来，其他界面要使用的话要从这里拿（具体可参考ProfileFragment onCreateView那里的方法获取user_id)
 - PagerAdapter.java : 
   - Tab的adapter，初始化时创建动态（连后端的话，可能要在这里获取动态列表），通过setArguments将动态传给Tab
 - TabFragment.java，fragment_tab.xml : 
@@ -39,6 +40,11 @@
 - SearchFragement.java, fragment_search.xml : 目前还没有实际功能
 
 ## 个人页面（Profile)
-- ProfileFragment.java, fragment_profile.xml : 
+- ProfileFragment.java, fragment_profile.xml: 
   - 从后端提取个人信息（用户名、邮箱、简介、头像）
   - 头像下载与展示方法与动态图片一样，若文件不存在则启动ImageService下载到本地（download_tmp)，否则直接读取先前保存的即可
+  - 点击Button，通过startActivityForResult跳转到EditProfileActivity，onActivityResult接收传后来的信息进行替换（用户名、简介、头像），头像替换方法也是通过ImageService
+- EditProfileActivity.java，fragment_edit_profile:
+  - 修改和保存用户名、简介和头像
+  - 点击头像启动Gallery Activity从Gallery选择图片，选择完毕后在onActivityResult接收，并转换为路径名（保存为img_src)，通过uploadImage上传之后端
+  - 点击Button将修改后的个人信息保存到后端，并退回Profile Fragment（会将修改后的用户名、简介和头像名传回去）
