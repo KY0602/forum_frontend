@@ -2,10 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/frameLayout3"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Profile.EditProfileActivity" >
+    tools:context=".Profile.OtherUserProfileActivity">
 
     <TextView
         android:id="@+id/followingListLabel"
@@ -24,7 +23,7 @@
         app:layout_constraintVertical_bias="0.025" />
 
     <ImageView
-        android:id="@+id/profilePic_edit"
+        android:id="@+id/profilePic_other"
         android:layout_width="105dp"
         android:layout_height="96dp"
         android:layout_marginStart="36dp"
@@ -46,7 +45,19 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profilePic_edit" />
+        app:layout_constraintTop_toBottomOf="@+id/profilePic_other" />
+
+    <TextView
+        android:id="@+id/emailLabel"
+        android:layout_width="90dp"
+        android:layout_height="30dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="30dp"
+        android:text="邮箱"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/usernameLabel" />
 
     <TextView
         android:id="@+id/profileDescLabel"
@@ -58,10 +69,10 @@
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/emailLabel" />
 
-    <EditText
-        android:id="@+id/profileDesc_edit"
+    <TextView
+        android:id="@+id/profileDesc_other"
         android:layout_width="344dp"
         android:layout_height="206dp"
         android:layout_marginStart="16dp"
@@ -76,35 +87,64 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileDescLabel" />
 
+    <TextView
+        android:id="@+id/username_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="50dp"
+        android:layout_marginTop="24dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/usernameLabel"
+        app:layout_constraintTop_toBottomOf="@+id/profilePic_other" />
+
+    <TextView
+        android:id="@+id/email_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="48dp"
+        android:layout_marginTop="36dp"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/emailLabel"
+        app:layout_constraintTop_toBottomOf="@+id/username_other" />
+
+    <TextView
+        android:id="@+id/followingListTxt_other"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="关注列表"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/imageView5"
+        app:layout_constraintTop_toBottomOf="@+id/followingListLabel" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/list"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/followingListLabel" />
+
     <Button
-        android:id="@+id/saveProfileButton"
+        android:id="@+id/follow_unfollow"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:text="保存个人信息"
+        android:text="关注/取关"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/profileDesc_edit" />
+        app:layout_constraintTop_toBottomOf="@+id/profileDesc_other" />
 
-    <EditText
-        android:id="@+id/username_edit"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="50dp"
-        android:layout_marginTop="24dp"
-        android:background="@android:drawable/editbox_background"
-        android:textSize="18sp"
-        app:layout_constraintStart_toEndOf="@+id/usernameLabel"
-        app:layout_constraintTop_toBottomOf="@+id/profilePic_edit" />
-
-    <ImageView
-        android:id="@+id/imageView4"
+    <Button
+        android:id="@+id/block_unblock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@android:drawable/ic_menu_gallery"
-        app:layout_constraintBottom_toBottomOf="@+id/profilePic_edit"
-        app:layout_constraintEnd_toEndOf="@+id/profilePic_edit"
-        app:layout_constraintStart_toStartOf="@+id/profilePic_edit"
-        app:layout_constraintTop_toTopOf="@+id/profilePic_edit" />
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:text="屏蔽/解除屏蔽"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileDesc_other" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -115,7 +115,7 @@ public class EditProfileActivity extends AppCompatActivity {
         username_edit.setText(username_user);
 
         description_edit = findViewById(R.id.profileDesc_edit);
-        description_edit.setText(desc_user);
+        if (!desc_user.equals("null")) description_edit.setText(desc_user);
 
         saveProfileButton = findViewById(R.id.saveProfileButton);
         saveProfileButton.setOnClickListener(this::saveProfile);

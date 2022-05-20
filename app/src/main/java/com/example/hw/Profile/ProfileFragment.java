@@ -42,11 +42,11 @@ import okhttp3.Response;
 public class ProfileFragment extends Fragment implements View.OnClickListener {
     private static final String LOG_TAG = ProfileFragment.class.getSimpleName();
     private AppCompatActivity activity;
-    TextView username, email, description;
+    TextView username, email, description, following_list;
     ImageView profile_pic;
-    Button editProfileButton;
+    Button editProfileButton, changePwButton;
     String user_id, profile_pic_user, username_user, desc_user;
-    int EDIT_USER_INFO = 400;
+    static final int EDIT_USER_INFO = 400, CHANGE_USER_PW=500;
 
     public ProfileFragment(){
         // require a empty public constructor
@@ -90,8 +90,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         description = v.findViewById(R.id.profileDesc);
         profile_pic = v.findViewById(R.id.profilePic);
 
+        following_list = v.findViewById(R.id.followingListTxt);
+        following_list.setClickable(true);
+        following_list.setOnClickListener(this);
+
         editProfileButton = v.findViewById(R.id.editProfileButton);
         editProfileButton.setOnClickListener(this);
+
+        changePwButton = v.findViewById(R.id.changePwButton);
+        changePwButton.setOnClickListener(this);
 
         String jsonStr = "{\"user_id\":\""+ user_id + "\"}";
         String requestUrl = getResources().getString(R.string.backend_url) + "query-userinfo";
@@ -184,6 +191,20 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 intent.putExtras(extras);
                 startActivityForResult(intent, EDIT_USER_INFO);
                 break;
+            case R.id.changePwButton:
+                Log.d(LOG_TAG, "Change PW");
+
+                Intent intent_change_pw = new Intent(getActivity(), ChangePasswordActivity.class);
+                intent_change_pw.putExtra("user_id", this.user_id);
+                startActivityForResult(intent_change_pw, CHANGE_USER_PW);
+                break;
+            case R.id.followingListTxt:
+                Log.d(LOG_TAG, "Following list");
+
+                Intent intent_following = new Intent(getActivity(), FollowingListActivity.class);
+                intent_following.putExtra("user_id_self", this.user_id);
+                intent_following.putExtra("user_id_other", this.user_id);
+                startActivity(intent_following);
             default:
                 Log.d(LOG_TAG, "No match");
                 break;
@@ -196,30 +217,36 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == EDIT_USER_INFO) {
-                Log.d(LOG_TAG, "return");
-                Bundle extras = data.getExtras();
+            switch(requestCode) {
+                case EDIT_USER_INFO:
+                    Bundle extras = data.getExtras();
 
-                username_user = extras.getString("username");
-                desc_user = extras.getString("description");
-                profile_pic_user = extras.getString("profile_pic");
-                Log.d(LOG_TAG, profile_pic_user);
+                    username_user = extras.getString("username");
+                    desc_user = extras.getString("description");
+                    profile_pic_user = extras.getString("profile_pic");
+                    Log.d(LOG_TAG, profile_pic_user);
 
-                username.setText(username_user);
-                description.setText(desc_user);
+                    username.setText(username_user);
+                    description.setText(desc_user);
 
-                // Download image, start ImageService to download pic if image does not already exist
-                if (!profile_pic_user.equals("null")) {
-                    File imgFile = new File(getResources().getString(R.string.image_loc) + profile_pic_user);
-                    if (imgFile.exists()) {
-                        profile_pic.setImageURI(Uri.fromFile(imgFile));
-                    } else {
-                        Intent imgIntent = new Intent(activity, ImageService.class);
-                        imgIntent.putExtra("image_type", "profile");
-                        imgIntent.putExtra("image_name", profile_pic_user);
-                        activity.startService(imgIntent);
+                    // Download image, start ImageService to download pic if image does not already exist
+                    if (!profile_pic_user.equals("null")) {
+                        File imgFile = new File(getResources().getString(R.string.image_loc) + profile_pic_user);
+                        if (imgFile.exists()) {
+                            profile_pic.setImageURI(Uri.fromFile(imgFile));
+                        } else {
+                            Intent imgIntent = new Intent(activity, ImageService.class);
+                            imgIntent.putExtra("image_type", "profile");
+                            imgIntent.putExtra("image_name", profile_pic_user);
+                            activity.startService(imgIntent);
+                        }
                     }
-                }
+                    break;
+                case CHANGE_USER_PW:
+                    Log.d(LOG_TAG, "changed successfully");
+                    break;
+                default:
+                    return;
             }
         }
     }

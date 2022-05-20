@@ -8,7 +8,7 @@
     tools:context=".Profile.ProfileFragment" >
 
     <TextView
-        android:id="@+id/profileTxt"
+        android:id="@+id/followingListLabel"
         android:layout_width="204dp"
         android:layout_height="46dp"
         android:text="个人简介"
@@ -31,7 +31,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.418"
-        app:layout_constraintStart_toEndOf="@+id/profileTxt"
+        app:layout_constraintStart_toEndOf="@+id/followingListLabel"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.025"
         app:srcCompat="@drawable/person" />
@@ -117,5 +117,35 @@
         android:textSize="18sp"
         app:layout_constraintStart_toEndOf="@+id/emailLabel"
         app:layout_constraintTop_toBottomOf="@+id/username" />
+
+    <Button
+        android:id="@+id/changePwButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="24dp"
+        android:text="修改密码"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/profileDesc" />
+
+    <TextView
+        android:id="@+id/followingListTxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="关注列表"
+        android:textSize="18sp"
+        app:layout_constraintStart_toEndOf="@+id/imageView5"
+        app:layout_constraintTop_toBottomOf="@+id/followingListLabel" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:src="@drawable/list"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/followingListLabel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
