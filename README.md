@@ -1,4 +1,5 @@
 # 代码模块介绍
+*注意标黑的部分*
 ## 主模块
 - LoginActivity.java, RegisterActivity.java, activity_login.xml, activity_register.xml :
   - 注册、登录相关
@@ -19,12 +20,15 @@
   - RecyclerView的adapter，在这里处理RecyclerView的设计（？），onBindViewHolder处理点击动态后的跳转
 
 ### 动态页面（Status）
+- **Status.java**
+  - **动态类，用于后端传入时**
 - StatusActivity.java，activity_status.xml，activity_status_music.xml，activity_status_video.xml : 
   - 动态详情页面的主要部分，通过intent获取动态详情，目前是会根据传入的type判断是属于纯文字、图片、音频或视频，继而调用不同的xml
+  - 目前没有区分纯文字和图片
+  - **因为这部分在“个人主页”部分有用到，所以我写了从后端提取动态详情（图片）的简单实现。需要传入status_id和个人user_id，目前的版本如果从“动态页面”跳转的话这两个参数是写死为0和0的（在WordListAdapter.java那里）因此可能会崩溃**
 - ImageService.java : 
   - 需传入参数image_type(profile/status)和image_name
   - 会将网络图片保存到Pictures/download_tmp里，下载完成后会向StatusActivity发送Broadcast，接收到后再读取图片放到界面中
-  - 目前的版本中会从后端下载一个图片（图片名写死为tmp.jpg)，使用时需在电脑本地（与后端代码同一个drive）中创建Downloads/temp/upload/image文件夹，并往里头放一张tmp.jpg图片
 - MusicService.java :
   - 音乐播放器的service，目前是从本地（/Music)读取音频文件（写死为nevergonna.mp3)，然后通过MediaPlayer播放
 - VideoService.java :
@@ -59,3 +63,9 @@
   - 可对用户进行“关注/取关”和“屏蔽/解除屏蔽”操作
   - 需传入两个参数（user_id_self和user_id_other），以执行上面的操作
   - **动态部分，在点击其他人用户名跳转到这里，具体跳转方式就是开启Intent并传入两个参数即可**
+- PersonalPageActivity.java, activity_personal_page.xml
+  - 个人主页
+  - 需传入两个参数（user_id_self和user_id_other）
+  - 可以通过点击动态进入“动态详情页面”（StatusActivity）
+- StatusItemAdapter，status_list_item_layout.xml
+  - ListView中item的Adapter和layout
