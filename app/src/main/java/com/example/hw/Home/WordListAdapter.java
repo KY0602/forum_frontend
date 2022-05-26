@@ -85,9 +85,14 @@ public class WordListAdapter extends
                 activity = (AppCompatActivity)v.getContext();
                 Log.d(LOG_TAG, title);
                 Bundle extras = new Bundle();
+
+                // This part NEEDS to be change
+                extras.putString("status_id", "0");
+                extras.putString("user_id", "0");
+
                 extras.putString("EXTRA_TYPE", type);
                 extras.putString("EXTRA_TITLE", title);
-                extras.putString("EXTRA_MESSAGE", msg);
+                extras.putString("EXTRA_TEXT", msg);
                 Intent intent  = new Intent(v.getContext(), StatusActivity.class);
                 intent.putExtras(extras);
                 v.getContext().startActivity(intent);

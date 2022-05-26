@@ -42,7 +42,7 @@ import okhttp3.Response;
 public class ProfileFragment extends Fragment implements View.OnClickListener {
     private static final String LOG_TAG = ProfileFragment.class.getSimpleName();
     private AppCompatActivity activity;
-    TextView username, email, description, following_list;
+    TextView username, email, description, following_list, personal_page;
     ImageView profile_pic;
     Button editProfileButton, changePwButton;
     String user_id, profile_pic_user, username_user, desc_user;
@@ -93,6 +93,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         following_list = v.findViewById(R.id.followingListTxt);
         following_list.setClickable(true);
         following_list.setOnClickListener(this);
+
+        personal_page = v.findViewById(R.id.personalPageTxt);
+        personal_page.setClickable(true);
+        personal_page.setOnClickListener(this);
 
         editProfileButton = v.findViewById(R.id.editProfileButton);
         editProfileButton.setOnClickListener(this);
@@ -205,6 +209,15 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 intent_following.putExtra("user_id_self", this.user_id);
                 intent_following.putExtra("user_id_other", this.user_id);
                 startActivity(intent_following);
+                break;
+            case R.id.personalPageTxt:
+                Log.d(LOG_TAG, "Personal Page");
+
+                Intent intent_personal = new Intent(getActivity(), PersonalPageActivity.class);
+                intent_personal.putExtra("user_id_self", this.user_id);
+                intent_personal.putExtra("user_id_other", this.user_id);
+                startActivity(intent_personal);
+                break;
             default:
                 Log.d(LOG_TAG, "No match");
                 break;

@@ -31,6 +31,9 @@
         android:theme="@style/Theme.HW"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Profile.PersonalPageActivity"
+            android:exported="false" />
+        <activity
             android:name=".Profile.OtherUserProfileActivity"
             android:exported="false" />
         <activity

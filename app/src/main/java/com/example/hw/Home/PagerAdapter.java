@@ -50,10 +50,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
         Bundle extras_followed = new Bundle();
         extras_all.putStringArrayList("EXTRA_TYPE", type_list_all);
         extras_all.putStringArrayList("EXTRA_TITLE", title_list_all);
-        extras_all.putStringArrayList("EXTRA_MESSAGE", msg_list_all);
+        extras_all.putStringArrayList("EXTRA_TEXT", msg_list_all);
         extras_followed.putStringArrayList("EXTRA_TYPE", type_list_all);
         extras_followed.putStringArrayList("EXTRA_TITLE", title_list_followed);
-        extras_followed.putStringArrayList("EXTRA_MESSAGE", msg_list_followed);
+        extras_followed.putStringArrayList("EXTRA_TEXT", msg_list_followed);
         switch (position) {
             case 0:
                 TabFragment tabFragment1 = new TabFragment();

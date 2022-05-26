@@ -31,7 +31,7 @@ public class TabFragment extends Fragment {
         // require a empty public constructor
     }
 
-    // 通过getArguments从PagerAdapter获取动态列表，此处MUSIC和VIDEO只是为了测试音频和视频而写死两个动态
+    // 通过getArguments从PagerAdapter获取动态列表，此处AUDIO和VIDEO只是为了测试音频和视频而写死两个动态
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -45,7 +45,7 @@ public class TabFragment extends Fragment {
         if (extras != null) {
             type_list_all = extras.getStringArrayList("EXTRA_TYPE");
             title_list_all = extras.getStringArrayList("EXTRA_TITLE");
-            msg_list_all = extras.getStringArrayList("EXTRA_MESSAGE");
+            msg_list_all = extras.getStringArrayList("EXTRA_TEXT");
             for (int i = 0; i < 10; i++)
             {
                 statusTypeAll.addLast(type_list_all.get(i));
@@ -53,7 +53,7 @@ public class TabFragment extends Fragment {
                 statusMsgAll.addLast(msg_list_all.get(i));
             }
         }
-        statusTypeAll.addFirst("MUSIC");
+        statusTypeAll.addFirst("AUDIO");
         statusTitleAll.addFirst("Music");
         statusMsgAll.addFirst("This is a music.");
 

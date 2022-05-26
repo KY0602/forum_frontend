@@ -21,11 +21,31 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.hw.MainActivity;
+import com.example.hw.Profile.OtherUserProfileActivity;
+import com.example.hw.Profile.PersonalPageActivity;
 import com.example.hw.R;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class StatusActivity extends AppCompatActivity {
     private static final String LOG_TAG = StatusActivity.class.getSimpleName();
@@ -33,6 +53,7 @@ public class StatusActivity extends AppCompatActivity {
     private ImageButton shareButton, backButton;
     private ImageView imageView;
     private Button startButton, pauseButton;
+    private String user_id, media_image, status_id;
 
     // For audio
     boolean isPlay_audio = false;
@@ -87,7 +108,7 @@ public class StatusActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(LOG_TAG, "Image downloaded");
-            File imgFile = new File(getResources().getString(R.string.image_loc) + "tmp.jpg");
+            File imgFile = new File(getResources().getString(R.string.image_loc) + media_image);
             imageView.setImageURI(Uri.fromFile(imgFile));
         }
     };
@@ -116,13 +137,16 @@ public class StatusActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
+        status_id = extras.getString("status_id");
+        user_id = extras.getString("user_id");
+
         String type = extras.getString("EXTRA_TYPE");
         String title = extras.getString("EXTRA_TITLE");
-        String msg = extras.getString("EXTRA_MESSAGE");
+        String msg = extras.getString("EXTRA_TEXT");
 
         // 通过intent传入的type判断需要执行什么
         // 3 Types of contents
-        if (type.equals("MUSIC")) {
+        if (type.equals("AUDIO")) {
             Log.d(LOG_TAG, "Music");
             setContentView(R.layout.activity_status_music);
             startButton = findViewById(R.id.start);
@@ -149,17 +173,9 @@ public class StatusActivity extends AppCompatActivity {
         } else {
             setContentView(R.layout.activity_status);
             imageView = findViewById(R.id.image);
+            Log.d(LOG_TAG, status_id);
 
-            File imgFile = new File(getResources().getString(R.string.image_loc) + "tmp.jpg");
-            // If image does not exist, start a service to download
-            if (imgFile.exists()) {
-                imageView.setImageURI(Uri.fromFile(imgFile));
-            } else {
-                Intent imgIntent = new Intent(getBaseContext(), ImageService.class);
-                imgIntent.putExtra("image_type", "status");
-                imgIntent.putExtra("image_name", "tmp.jpg");
-                startService(imgIntent);
-            }
+            getStatusInfoImage();
         }
         titleView = findViewById(R.id.titleView2);
         titleView.setText(title);
@@ -184,6 +200,64 @@ public class StatusActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             titleView.setText(savedInstanceState.getString("getTitle"));
             msgView.setText(savedInstanceState.getString("getMessage"));
+        }
+    }
+
+    private void getStatusInfoImage() {
+        String jsonStr = "{\"status_id\":\""+ status_id + "\"}";
+        String requestUrl = getResources().getString(R.string.backend_url) + "query-status";
+
+        try{
+            OkHttpClient client = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
+
+            @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
+            Request request = new Request.Builder()
+                    .url(requestUrl)
+                    .post(body)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {}
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    final String responseStr = response.body().string();
+                    try {
+                        JSONObject jObject = new JSONObject(responseStr);
+                        boolean query_status = jObject.getBoolean("status");
+                        if (query_status) {
+                            media_image = jObject.getString("media");
+                            StatusActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    File imgFile = new File(getResources().getString(R.string.image_loc) + media_image);
+                                    // If image does not exist, start a service to download
+                                    if (imgFile.exists()) {
+                                        imageView.setImageURI(Uri.fromFile(imgFile));
+                                    } else {
+                                        Intent imgIntent = new Intent(getBaseContext(), ImageService.class);
+                                        imgIntent.putExtra("image_type", "status");
+                                        imgIntent.putExtra("image_name", media_image);
+                                        startService(imgIntent);
+                                    }
+                                }
+                            });
+                        } else {
+                            StatusActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "获取失败", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 

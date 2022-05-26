@@ -36,7 +36,7 @@ import okhttp3.Response;
 
 public class OtherUserProfileActivity extends AppCompatActivity {
     private static final String LOG_TAG = OtherUserProfileActivity.class.getSimpleName();
-    TextView username, email, description, following_list;
+    TextView username, email, description, following_list, personal_page;
     ImageView profile_pic;
     Button follow_unfollow, block_unblock;
     String user_id_self, user_id_other, profile_pic_user, username_user, desc_user;
@@ -80,7 +80,11 @@ public class OtherUserProfileActivity extends AppCompatActivity {
 
         following_list = findViewById(R.id.followingListTxt_other);
         following_list.setClickable(true);
-        following_list.setOnClickListener(this::jumpProfile);
+        following_list.setOnClickListener(this::jumpFollowingList);
+
+        personal_page = findViewById(R.id.personalPageTxt_other);
+        personal_page.setClickable(true);
+        personal_page.setOnClickListener(this::jumpPersonalPage);
 
         follow_unfollow = findViewById(R.id.follow_unfollow);
         follow_unfollow.setOnClickListener(this::follow_unfollow);
@@ -91,10 +95,19 @@ public class OtherUserProfileActivity extends AppCompatActivity {
         getUserInfo();
     }
 
-    private void jumpProfile(View v) {
+    private void jumpFollowingList(View v) {
         Log.d(LOG_TAG, "Following list");
 
         Intent intent_following = new Intent(this, FollowingListActivity.class);
+        intent_following.putExtra("user_id_self", this.user_id_self);
+        intent_following.putExtra("user_id_other", this.user_id_other);
+        startActivity(intent_following);
+    }
+
+    private void jumpPersonalPage(View v) {
+        Log.d(LOG_TAG, "PersonalPage");
+
+        Intent intent_following = new Intent(this, PersonalPageActivity.class);
         intent_following.putExtra("user_id_self", this.user_id_self);
         intent_following.putExtra("user_id_other", this.user_id_other);
         startActivity(intent_following);

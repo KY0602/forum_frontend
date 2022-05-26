@@ -58,7 +58,6 @@ public class FollowingListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_following_list);
 
         Intent intent = getIntent();
         user_id_self = intent.getStringExtra("user_id_self");
@@ -66,6 +65,7 @@ public class FollowingListActivity extends AppCompatActivity {
 
         getFollowingList();
 
+        setContentView(R.layout.activity_following_list);
         followingList = findViewById(R.id.following_list_view);
         ArrayAdapter<User> arr;
         arr = new ArrayAdapter<User>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, following);
