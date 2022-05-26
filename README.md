@@ -14,6 +14,7 @@
   - 登录后会将user_id传过来，其他界面要使用的话要从这里拿（具体可参考ProfileFragment onCreateView那里的方法获取user_id)
 - PagerAdapter.java : 
   - Tab的adapter，初始化时创建动态（连后端的话，可能要在这里获取动态列表），通过setArguments将动态传给Tab
+  - **从后端提取动态列表的方法可以参考PersonalPageActivity.java中getStatusList，URL要改成query-all-status或query-followed-status**
 - TabFragment.java，fragment_tab.xml : 
   - Tab组件，“所有用户动态”和“已关注用户动态”都属于这个类，通过getArguments获取动态列表
 - WordListAdapter.java，wordlist_item.xml : 
