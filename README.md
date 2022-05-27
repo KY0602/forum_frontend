@@ -42,7 +42,10 @@
   - 点击发布后，调用switchContent来调用MainActivity中的switchHome，在switchHome里再把新动态添加到列表中。
 
 ## 搜索页面（Search)
-- SearchFragement.java, fragment_search.xml : 目前还没有实际功能
+- SearchFragement.java, fragment_search.xml : 
+  - 已实现四种搜索方式
+  - 返回列表重用了“个人页面”部分的StatusItemAdapter和status_list_item_layout.xml
+  - 获得列表之后的展示部分与“个人页面”部分一样使用了broadcast来通知activity展示动态列表
 
 ## 个人页面（Profile)
 - ProfileFragment.java, fragment_profile.xml: 
@@ -59,6 +62,7 @@
 - FollowingListActivity.java, activity_following_list.xml:
   - 展示“已关注用户”列表
   - 需传入两个参数（user_id_self和user_id_other)，若从Profile Fragment（自己的个人信息页面）跳转的话两者都是自己的user_id
+  - - 从后端得到列表后通过broadcast方式通知activity开始展示列表
 - OtherUserProfileActivity.java, activity_other_user_profile.xml:
   - 他人的个人信息页面
   - 可对用户进行“关注/取关”和“屏蔽/解除屏蔽”操作
@@ -67,6 +71,7 @@
 - PersonalPageActivity.java, activity_personal_page.xml
   - 个人主页
   - 需传入两个参数（user_id_self和user_id_other）
+  - 从后端得到列表后通过broadcast方式通知activity开始展示列表
   - 可以通过点击动态进入“动态详情页面”（StatusActivity）
 - StatusItemAdapter，status_list_item_layout.xml
   - ListView中item的Adapter和layout
