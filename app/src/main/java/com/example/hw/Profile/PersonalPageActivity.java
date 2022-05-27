@@ -1,9 +1,13 @@
 package com.example.hw.Profile;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.app.Person;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,42 +49,79 @@ import okhttp3.Response;
 public class PersonalPageActivity extends AppCompatActivity {
     private static final String LOG_TAG = PersonalPageActivity.class.getSimpleName();
     private String user_id_self, user_id_other;
+    ImageView empty_tray;
+    TextView empty_txt;
     ListView statusListView;
+    ProgressBar spinner;
     ArrayList<Status> status_list = new ArrayList<Status>();
+
+    // Resume时register receiver，会捕捉到"LIST-OBTAINED"的broadcast，用以列表获取完成时通知
+    @Override
+    public void onResume() {
+        // Register to receive messages.
+        // We are registering an observer (mMessageReceiver) to receive Intents
+        // with actions named "IMAGE-DOWNLOADED".
+        Log.d(LOG_TAG, "Resume");
+        statusListView.setVisibility(View.VISIBLE);
+        empty_tray.setVisibility(View.INVISIBLE);
+        empty_txt.setVisibility(View.INVISIBLE);
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mMessageReceiver, new IntentFilter("LIST-OBTAINED"));
+        super.onResume();
+    }
+
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "LIST-OBTAINED" is broadcast.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver(){
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(LOG_TAG, "List obtained");
+            int user_count = intent.getIntExtra("user_count", 0);
+            if (user_count == 0) {
+                statusListView.setVisibility(View.INVISIBLE);
+                empty_tray.setVisibility(View.VISIBLE);
+                empty_txt.setVisibility(View.VISIBLE);
+            }
+
+            spinner.setVisibility(View.GONE);
+            statusListView.setAdapter(new StatusItemAdapter(getApplicationContext(), status_list));
+            statusListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent intent = new Intent(getApplicationContext(), StatusActivity.class);
+                    Bundle extras = new Bundle();
+                    String status_id = status_list.get(i).status_id;
+                    String type = status_list.get(i).type;
+                    String title = status_list.get(i).title;
+                    String text = status_list.get(i).text;
+                    extras.putString("status_id", status_id);
+                    extras.putString("user_id", user_id_self);
+                    extras.putString("EXTRA_TYPE", type);
+                    extras.putString("EXTRA_TITLE", title);
+                    extras.putString("EXTRA_TEXT", text);
+                    intent.putExtras(extras);
+                    startActivity(intent);
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_personal_page);
 
         Intent intent = getIntent();
         user_id_self = intent.getStringExtra("user_id_self");
         user_id_other = intent.getStringExtra("user_id_other");
 
-        getStatusList();
-
-        setContentView(R.layout.activity_personal_page);
         statusListView = findViewById(R.id.status_list_view);
+        empty_tray = findViewById(R.id.empty_tray_personal);
+        empty_txt = findViewById(R.id.empty_txt_personal);
+        spinner = findViewById(R.id.progressBar_personal);
 
-        statusListView.setAdapter(new StatusItemAdapter(this, status_list));
-        statusListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getApplicationContext(), StatusActivity.class);
-                Bundle extras = new Bundle();
-                String status_id = status_list.get(i).status_id;
-                String type = status_list.get(i).type;
-                String title = status_list.get(i).title;
-                String text = status_list.get(i).text;
-                extras.putString("status_id", status_id);
-                extras.putString("user_id", user_id_self);
-                extras.putString("EXTRA_TYPE", type);
-                extras.putString("EXTRA_TITLE", title);
-                extras.putString("EXTRA_TEXT", text);
-                intent.putExtras(extras);
-                startActivity(intent);
-            }
-        });
+        getStatusList();
     }
 
     private void getStatusList() {
@@ -106,8 +148,10 @@ public class PersonalPageActivity extends AppCompatActivity {
                         boolean query_status = jObject.getBoolean("status");
                         if (query_status) {
                             JSONArray statusArray = jObject.getJSONArray("status_list");
+                            int count = 0;
                             for (int i = 0; i < statusArray.length(); i++)
                             {
+                                count++;
                                 JSONObject status_tmp = statusArray.getJSONObject(i);
 
                                 String status_id = status_tmp.getString("status_id");
@@ -127,6 +171,9 @@ public class PersonalPageActivity extends AppCompatActivity {
                                 , like);
                                 status_list.add(i, status);
                             }
+                            Intent intent = new Intent("LIST-OBTAINED");
+                            intent.putExtra("user_count", count);
+                            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                         } else {
                             PersonalPageActivity.this.runOnUiThread(new Runnable() {
                                 @Override

@@ -1,16 +1,23 @@
 package com.example.hw.Profile;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hw.Home.Status.ImageService;
@@ -52,35 +59,74 @@ class User {
 public class FollowingListActivity extends AppCompatActivity {
     private static final String LOG_TAG = FollowingListActivity.class.getSimpleName();
     private String user_id_self, user_id_other;
+    private ImageView empty_tray;
+    private TextView empty_txt;
+    ProgressBar spinner;
     ListView followingList;
     ArrayList<User> following = new ArrayList<User>();
+
+    // Resume时register receiver，会捕捉到"LIST-OBTAINED"的broadcast，用以列表获取完成时通知
+    @Override
+    public void onResume() {
+        // Register to receive messages.
+        // We are registering an observer (mMessageReceiver) to receive Intents
+        // with actions named "IMAGE-DOWNLOADED".
+        Log.d(LOG_TAG, "Resume");
+        followingList.setVisibility(View.VISIBLE);
+        empty_tray.setVisibility(View.INVISIBLE);
+        empty_txt.setVisibility(View.INVISIBLE);
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                mMessageReceiver, new IntentFilter("LIST-OBTAINED"));
+        super.onResume();
+    }
+
+    // Our handler for received Intents. This will be called whenever an Intent
+    // with an action named "LIST-OBTAINED" is broadcast.
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver(){
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(LOG_TAG, "List obtained");
+            int user_count = intent.getIntExtra("user_count", 0);
+            if (user_count == 0) {
+                followingList.setVisibility(View.INVISIBLE);
+                empty_tray.setVisibility(View.VISIBLE);
+                empty_txt.setVisibility(View.VISIBLE);
+            }
+
+            spinner.setVisibility(View.GONE);
+            ArrayAdapter<User> arr;
+            arr = new ArrayAdapter<User>(getApplicationContext(), androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, following);
+            followingList.setAdapter(arr);
+            followingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                @Override
+                public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                    Intent intent = new Intent(getApplicationContext(), OtherUserProfileActivity.class);
+                    String user_id_other_2 = following.get(i).getUser_id();
+                    intent.putExtra("user_id_self", user_id_self);
+                    intent.putExtra("user_id_other", user_id_other_2);
+                    startActivity(intent);
+                }
+            });
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_following_list);
 
         Intent intent = getIntent();
         user_id_self = intent.getStringExtra("user_id_self");
         user_id_other = intent.getStringExtra("user_id_other");
 
+        followingList = findViewById(R.id.following_list_view);
+        empty_tray = findViewById(R.id.empty_tray);
+        empty_txt = findViewById(R.id.empty_txt);
+        spinner = findViewById(R.id.progressBar_following);
+
         getFollowingList();
 
-        setContentView(R.layout.activity_following_list);
-        followingList = findViewById(R.id.following_list_view);
-        ArrayAdapter<User> arr;
-        arr = new ArrayAdapter<User>(this, androidx.appcompat.R.layout.support_simple_spinner_dropdown_item, following);
-        followingList.setAdapter(arr);
-        followingList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent intent = new Intent(getApplicationContext(), OtherUserProfileActivity.class);
-                String user_id_other_2 = following.get(i).getUser_id();
-                intent.putExtra("user_id_self", user_id_self);
-                intent.putExtra("user_id_other", user_id_other_2);
-                startActivity(intent);
-            }
-        });
     }
 
     private void getFollowingList() {
@@ -107,8 +153,10 @@ public class FollowingListActivity extends AppCompatActivity {
                         boolean status = jObject.getBoolean("status");
                         if (status) {
                             JSONArray userArray = jObject.getJSONArray("following");
+                            int count = 0;
                             for (int i = 0; i < userArray.length(); i++)
                             {
+                                count++;
                                 JSONObject user_tmp = userArray.getJSONObject(i);
 
                                 String user_id_tmp = user_tmp.getString("user_id");
@@ -117,6 +165,9 @@ public class FollowingListActivity extends AppCompatActivity {
                                 User user = new User(user_id_tmp, username_tmp);
                                 following.add(i, user);
                             }
+                            Intent intent = new Intent("LIST-OBTAINED");
+                            intent.putExtra("user_count", count);
+                            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
                         } else {
                             FollowingListActivity.this.runOnUiThread(new Runnable() {
                                 @Override

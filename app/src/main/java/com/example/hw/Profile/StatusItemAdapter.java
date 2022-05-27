@@ -49,6 +49,7 @@ public class StatusItemAdapter extends BaseAdapter {
             holder.title = (TextView) view.findViewById(R.id.status_item_title);
             holder.text = (TextView) view.findViewById(R.id.status_item_text);
             holder.date_created = (TextView) view.findViewById(R.id.status_item_date);
+            holder.creator = (TextView) view.findViewById(R.id.status_item_creator);
             view.setTag(holder);
         } else {
             holder = (ViewHolder) view.getTag();
@@ -58,12 +59,13 @@ public class StatusItemAdapter extends BaseAdapter {
         holder.title.setText(status.title);
         holder.text.setText(status.text);
         holder.date_created.setText(status.getDate());
+        holder.creator.setText(status.creator_username);
 
         return view;
     }
 
     static class ViewHolder {
-        TextView title, text, date_created;
+        TextView title, text, date_created, creator;
     }
 
 
