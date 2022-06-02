@@ -20,6 +20,8 @@ import com.example.hw.Post.PostFragment;
 import com.example.hw.Profile.ProfileFragment;
 import com.example.hw.Search.SearchFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 public class MainActivity extends AppCompatActivity{

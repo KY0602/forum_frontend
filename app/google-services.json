@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "1046240091036",
+    "project_id": "forum-app-b5274",
+    "storage_bucket": "forum-app-b5274.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046240091036:android:99be336103b65ef1394659",
+        "android_client_info": {
+          "package_name": "com.example.hw"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1046240091036-nio9lf5qvemr7gkabmdk8bpq3fqkno09.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxeyWyv7p0RI_xC80pFYbzAPWIATT7Rlg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1046240091036-nio9lf5qvemr7gkabmdk8bpq3fqkno09.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1046240091036:android:7c3d6ce61ee07266394659",
+        "android_client_info": {
+          "package_name": "com.example.hw5"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1046240091036-nio9lf5qvemr7gkabmdk8bpq3fqkno09.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxeyWyv7p0RI_xC80pFYbzAPWIATT7Rlg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1046240091036-nio9lf5qvemr7gkabmdk8bpq3fqkno09.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
