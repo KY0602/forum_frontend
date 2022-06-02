@@ -7,6 +7,9 @@
   - 初始化各个fragment
 - BottomBarAdapter.java，SmartFragmentStatePagerAdapter.java : 
   - 底部导航（Bottom Navigation）和fragment的adapter，应该不需要修改
+- NotificationService.java ：
+  - 处理后端的Push Notification
+  - [参考](https://www.geeksforgeeks.org/adding-firebase-to-android-app/)
 
 ## 动态列表页面（Home)
 - HomeFragment.java，fragment_home.xml : 
