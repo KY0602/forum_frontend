@@ -5,6 +5,7 @@
   - 注册、登录相关
 - MainActivity.java，activity_main.xml : 
   - 初始化各个fragment
+  - 登录时将token(用以接收push notifications)传给后端保存
 - BottomBarAdapter.java，SmartFragmentStatePagerAdapter.java : 
   - 底部导航（Bottom Navigation）和fragment的adapter，应该不需要修改
 - NotificationService.java ：
@@ -55,6 +56,7 @@
   - 从后端提取个人信息（用户名、邮箱、简介、头像）
   - 头像下载与展示方法与动态图片一样，若文件不存在则启动ImageService下载到本地（download_tmp)，否则直接读取先前保存的即可
   - 点击Button，通过startActivityForResult跳转到EditProfileActivity，onActivityResult接收传后来的信息进行替换（用户名、简介、头像），头像替换方法也是通过ImageService
+  - 点击"退出登录"button，删除SharedPreferences保存的登录信息，同时将后端保存的token删除
 - EditProfileActivity.java，activity_edit_profile.xml:
   - 修改和保存用户名、简介和头像
   - 点击头像启动Gallery Activity从Gallery选择图片，选择完毕后在onActivityResult接收，并转换为路径名（保存为img_src)，通过uploadImage上传之后端
