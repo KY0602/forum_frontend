@@ -37,56 +37,6 @@ import okhttp3.Response;
 public class NotificationService extends FirebaseMessagingService {
     private static final String LOG_TAG = NotificationService.class.getSimpleName();
 
-    // Save token to database when updated
-    @Override
-    public void onNewToken(@NonNull String token) {
-        super.onNewToken(token);
-        Log.d(LOG_TAG, token);
-        String user_id;
-
-        SharedPreferences pref = getSharedPreferences("User", 0);
-        if (pref.contains("user_id")) {
-            user_id = pref.getString("user_id", "");
-        } else return;
-
-        //upload token to server
-        String jsonStr = "{\"user_id\":\""+ user_id + "\",\"token\":\""+ token +"\"}";
-        String requestUrl = getResources().getString(R.string.backend_url) + "register-token";
-
-        try{
-            OkHttpClient client = new OkHttpClient();
-            MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
-
-            @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
-            Request request = new Request.Builder()
-                    .url(requestUrl)
-                    .post(body)
-                    .build();
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {}
-                @Override
-                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                    final String responseStr = response.body().string();
-                    try {
-                        JSONObject jObject = new JSONObject(responseStr);
-                        boolean status = jObject.getBoolean("status");
-                        if (status) {
-                            Log.d(LOG_TAG, "Saved successfully");
-                        } else {
-                            Log.d(LOG_TAG, "Saved failed");
-                        }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-            });
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-    }
-
     // Override onMessageReceived() method to extract the
     // title and
     // body from the message passed in FCM

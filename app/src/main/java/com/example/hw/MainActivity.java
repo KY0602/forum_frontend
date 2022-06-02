@@ -3,6 +3,7 @@ package com.example.hw;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
@@ -19,9 +20,25 @@ import com.example.hw.Home.HomeFragment;
 import com.example.hw.Post.PostFragment;
 import com.example.hw.Profile.ProfileFragment;
 import com.example.hw.Search.SearchFragment;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessaging;
+
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 
 public class MainActivity extends AppCompatActivity{
@@ -50,6 +67,16 @@ public class MainActivity extends AppCompatActivity{
         Intent intent = getIntent();
         user_id = intent.getStringExtra("user_id");
         Log.d(LOG_TAG, user_id);
+
+        this.verifyStoragePermissions(this);
+
+        FirebaseInstanceId.getInstance().getInstanceId().addOnSuccessListener(new OnSuccessListener<InstanceIdResult>() {
+            @Override
+            public void onSuccess(InstanceIdResult instanceIdResult) {
+                String token = instanceIdResult.getToken();
+                registerToken(token);
+            }
+        });
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
         viewPagerMain = findViewById(R.id.viewPagerMain);
@@ -120,6 +147,45 @@ public class MainActivity extends AppCompatActivity{
                     PERMISSIONS_STORAGE,
                     REQUEST_EXTERNAL_STORAGE
             );
+        }
+    }
+
+    public void registerToken(String token) {
+        //upload token to server
+        String jsonStr = "{\"user_id\":\""+ user_id + "\",\"token\":\""+ token +"\"}";
+        String requestUrl = getResources().getString(R.string.backend_url) + "register-token";
+
+        try{
+            OkHttpClient client = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
+
+            @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
+            Request request = new Request.Builder()
+                    .url(requestUrl)
+                    .post(body)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {}
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    final String responseStr = response.body().string();
+                    try {
+                        JSONObject jObject = new JSONObject(responseStr);
+                        boolean status = jObject.getBoolean("status");
+                        if (status) {
+                            Log.d(LOG_TAG, "Saved successfully");
+                        } else {
+                            Log.d(LOG_TAG, "Saved failed");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

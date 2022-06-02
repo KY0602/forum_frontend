@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +22,7 @@ import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.hw.Home.Status.ImageService;
+import com.example.hw.LoginActivity;
 import com.example.hw.MainActivity;
 import com.example.hw.R;
 
@@ -44,9 +46,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private AppCompatActivity activity;
     TextView username, email, description, following_list, personal_page;
     ImageView profile_pic;
-    Button editProfileButton, changePwButton;
+    Button editProfileButton, changePwButton, logoutButton;
     String user_id, profile_pic_user, username_user, desc_user;
     static final int EDIT_USER_INFO = 400, CHANGE_USER_PW=500;
+    private static SharedPreferences pref;
 
     public ProfileFragment(){
         // require a empty public constructor
@@ -69,9 +72,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver(){
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(LOG_TAG, "Image downloaded");
-            File imgFile = new File(getResources().getString(R.string.image_loc) + profile_pic_user);
-            profile_pic.setImageURI(Uri.fromFile(imgFile));
+            if (intent.getAction().equals("IMAGE-DOWNLOADED")) {
+                Log.d(LOG_TAG, "Image downloaded");
+                File imgFile = new File(getResources().getString(R.string.image_loc) + profile_pic_user);
+                profile_pic.setImageURI(Uri.fromFile(imgFile));
+            }
         }
     };
 
@@ -103,6 +108,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
         changePwButton = v.findViewById(R.id.changePwButton);
         changePwButton.setOnClickListener(this);
+
+        logoutButton = v.findViewById(R.id.logoutButton);
+        logoutButton.setOnClickListener(this);
+
+        pref = activity.getSharedPreferences("User", 0);
 
         String jsonStr = "{\"user_id\":\""+ user_id + "\"}";
         String requestUrl = getResources().getString(R.string.backend_url) + "query-userinfo";
@@ -218,9 +228,62 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 intent_personal.putExtra("user_id_other", this.user_id);
                 startActivity(intent_personal);
                 break;
+            case R.id.logoutButton:
+                Log.d(LOG_TAG, "Logout");
+                logout();
+                break;
             default:
                 Log.d(LOG_TAG, "No match");
                 break;
+        }
+    }
+
+    private void logout() {
+        pref.edit().remove("user_id").commit();
+
+        // Remove token from server
+        String jsonStr = "{\"user_id\":\""+ user_id + "\"}";
+        String requestUrl = getResources().getString(R.string.backend_url) + "unregister-token";
+
+        try{
+            OkHttpClient client = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
+
+            @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
+            Request request = new Request.Builder()
+                    .url(requestUrl)
+                    .post(body)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {}
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    final String responseStr = response.body().string();
+                    try {
+                        JSONObject jObject = new JSONObject(responseStr);
+                        boolean status = jObject.getBoolean("status");
+                        if (status) {
+                            Log.d(LOG_TAG, "Saved successfully");
+                            Intent intent = new Intent(activity, LoginActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Log.d(LOG_TAG, "Saved failed");
+                            activity.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(activity, "获取失败", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 
