@@ -90,9 +90,9 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
         @Override
         public void onReceive(Context context, Intent intent) {
             Log.d(LOG_TAG, "List obtained");
-            int user_count = intent.getIntExtra("user_count", 0);
+            int status_count = intent.getIntExtra("status_count", 0);
             spinner.setVisibility(View.GONE);
-            if (user_count == 0) {
+            if (status_count == 0) {
                 searchListView.setVisibility(View.INVISIBLE);
                 empty_tray.setVisibility(View.VISIBLE);
                 empty_txt.setVisibility(View.VISIBLE);
@@ -275,7 +275,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener {
                                     status_list.add(i, status);
                                 }
                                 Intent intent = new Intent("LIST-OBTAINED");
-                                intent.putExtra("user_count", count);
+                                intent.putExtra("status_count", count);
                                 LocalBroadcastManager.getInstance(activity.getApplicationContext()).sendBroadcast(intent);
                             } else {
                                 activity.runOnUiThread(new Runnable() {

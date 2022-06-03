@@ -44,7 +44,7 @@ import okhttp3.Response;
 public class ProfileFragment extends Fragment implements View.OnClickListener {
     private static final String LOG_TAG = ProfileFragment.class.getSimpleName();
     private AppCompatActivity activity;
-    TextView username, email, description, following_list, personal_page;
+    TextView username, email, description, following_list, personal_page, notify_list;
     ImageView profile_pic;
     Button editProfileButton, changePwButton, logoutButton;
     String user_id, profile_pic_user, username_user, desc_user;
@@ -102,6 +102,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         personal_page = v.findViewById(R.id.personalPageTxt);
         personal_page.setClickable(true);
         personal_page.setOnClickListener(this);
+
+        notify_list = v.findViewById(R.id.notifyListTxt);
+        notify_list.setClickable(true);
+        notify_list.setOnClickListener(this);
 
         editProfileButton = v.findViewById(R.id.editProfileButton);
         editProfileButton.setOnClickListener(this);
@@ -227,6 +231,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 intent_personal.putExtra("user_id_self", this.user_id);
                 intent_personal.putExtra("user_id_other", this.user_id);
                 startActivity(intent_personal);
+                break;
+            case R.id.notifyListTxt:
+                Log.d(LOG_TAG, "Notifications List");
+
+                Intent intent_notify = new Intent(getActivity(), NotificationsActivity.class);
+                intent_notify.putExtra("user_id", this.user_id);
+                startActivity(intent_notify);
                 break;
             case R.id.logoutButton:
                 Log.d(LOG_TAG, "Logout");

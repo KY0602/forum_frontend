@@ -31,6 +31,9 @@
         android:theme="@style/Theme.HW"
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".Profile.NotificationsActivity"
+            android:exported="false" />
+        <activity
             android:name=".Profile.PersonalPageActivity"
             android:exported="false" />
         <activity
@@ -74,7 +77,8 @@
         <service android:name=".Home.Status.ImageService" />
         <service android:name=".Home.Status.MusicService" />
         <service android:name=".Home.Status.VideoService" />
-        <service android:name=".NotificationService"
+        <service
+            android:name=".NotificationService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />

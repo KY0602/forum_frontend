@@ -67,6 +67,4 @@ public class StatusItemAdapter extends BaseAdapter {
     static class ViewHolder {
         TextView title, text, date_created, creator;
     }
-
-
 }
