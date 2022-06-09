@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.hw.Home.Status.CommentListActivity;
 import com.example.hw.Home.Status.Status;
 import com.example.hw.Home.Status.StatusActivity;
 import com.example.hw.R;
@@ -110,19 +111,18 @@ public class NotificationsActivity extends AppCompatActivity {
 
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                    Intent intent = new Intent(getApplicationContext(), StatusActivity.class);
-                    Bundle extras = new Bundle();
                     String status_id = notify_list.get(i).status_id;
-                    String type = "TEXT";
-                    String title = "Test";
-                    String text = "Test text";
-                    extras.putString("status_id", status_id);
-                    extras.putString("user_id", user_id);
-                    extras.putString("EXTRA_TYPE", type);
-                    extras.putString("EXTRA_TITLE", title);
-                    extras.putString("EXTRA_TEXT", text);
-                    intent.putExtras(extras);
-                    startActivity(intent);
+                    String type = notify_list.get(i).type;
+                    if (type.equals("COMMENT")) {
+                        Bundle extras = new Bundle();
+                        extras.putString("status_id", status_id);
+                        extras.putString("user_id", user_id);
+                        Intent intent  = new Intent(getApplicationContext(), CommentListActivity.class);
+                        intent.putExtras(extras);
+                        startActivity(intent);
+                    } else {
+                        getStatusInfo(status_id);
+                    }
                 }
             });
         }
@@ -190,6 +190,72 @@ public class NotificationsActivity extends AppCompatActivity {
                             Intent intent = new Intent("LIST-OBTAINED");
                             intent.putExtra("notify_count", count);
                             LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
+                        } else {
+                            NotificationsActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "获取失败", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    } catch (JSONException | ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void getStatusInfo(String status_id) {
+        String jsonStr = "{\"status_id\":\""+ status_id + "\"}";
+        String requestUrl = getResources().getString(R.string.backend_url) + "query-status";
+
+        try{
+            OkHttpClient client = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
+
+            @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
+            Request request = new Request.Builder()
+                    .url(requestUrl)
+                    .post(body)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {}
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    final String responseStr = response.body().string();
+                    try {
+                        JSONObject jObject = new JSONObject(responseStr);
+                        boolean query_status = jObject.getBoolean("status");
+                        if (query_status) {
+                            String creator_id = jObject.getString("creator_id");
+                            String creator_username = jObject.getString("creator_username");
+                            String type = jObject.getString("type");
+                            String title = jObject.getString("title");
+                            String text = jObject.getString("text");
+                            String date_tmp = jObject.getString("date_created");
+
+                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                            Date created_date = sdf.parse(date_tmp);
+
+                            int like = jObject.getInt("like");
+
+                            Status status = new Status(status_id, creator_id, creator_username, type, title, text, created_date
+                                    , like);
+                            Intent intent = new Intent(getApplicationContext(), StatusActivity.class);
+                            Bundle extras = new Bundle();
+                            extras.putString("status_id", status_id);
+                            extras.putString("user_id", user_id);
+                            extras.putString("EXTRA_TYPE", type);
+                            extras.putString("EXTRA_TITLE", title);
+                            extras.putString("EXTRA_TEXT", text);
+                            extras.<Status>putParcelable("EXTRA_STATUS", status);
+                            intent.putExtras(extras);
+                            startActivity(intent);
                         } else {
                             NotificationsActivity.this.runOnUiThread(new Runnable() {
                                 @Override

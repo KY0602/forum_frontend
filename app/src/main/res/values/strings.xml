@@ -25,4 +25,6 @@
     <string name="tab_label2">已关注用户动态</string>
     <string name="backend_url">http://192.168.1.10:8000/</string>
     <string name="image_loc">/storage/emulated/0/Pictures/download_tmp/</string>
+    <string name="music_loc">/storage/emulated/0/Music/download_tmp/</string>
+    <string name="video_loc">/storage/emulated/0/Movies/download_tmp/</string>
 </resources>

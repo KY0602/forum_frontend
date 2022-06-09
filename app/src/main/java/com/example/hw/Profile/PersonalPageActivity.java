@@ -100,6 +100,7 @@ public class PersonalPageActivity extends AppCompatActivity {
                     extras.putString("EXTRA_TYPE", type);
                     extras.putString("EXTRA_TITLE", title);
                     extras.putString("EXTRA_TEXT", text);
+                    extras.<Status>putParcelable("EXTRA_STATUS",status_list.get(i));
                     intent.putExtras(extras);
                     startActivity(intent);
                 }

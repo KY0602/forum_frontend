@@ -1,7 +1,9 @@
 package com.example.hw.Home.Status;
 
+import android.app.DownloadManager;
 import android.app.Service;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -94,44 +96,19 @@ public class ImageService extends Service{
     }
 
     public void downloadFile(String fileURL, String fileName) {
-        try {
-            File root = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + "/download_tmp");
-            if (root.exists() && root.isDirectory()) {
+        DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        Uri Download_Uri = Uri.parse(fileURL);
+        DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
 
-            } else {
-                Log.d(LOG_TAG, "Directory created");
-                root.mkdir();
-            }
-            Log.d(LOG_TAG, root.getPath());
-            Log.d(LOG_TAG, fileURL);
-            URL u = new URL(fileURL);
-            URLConnection c = u.openConnection();
-            c.connect();
-            int fileSize = c.getContentLength();
-            Log.d(LOG_TAG, String.valueOf(fileSize));
+        //Restrict the types of networks over which this download may proceed.
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+        //Set whether this download may proceed over a roaming connection.
+        request.setAllowedOverRoaming(false);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_PICTURES,
+                File.separator + "/download_tmp" + File.separator + fileName);
 
-            // Download file
-            InputStream input = new BufferedInputStream(u.openStream(), 8192);
-
-            // Output stream
-            FileOutputStream output = new FileOutputStream(root + "/" + fileName);
-
-            byte data[] = new byte[1024];
-            long total = 0;
-            int count;
-
-            while ((count = input.read(data)) != -1) {
-                total += count;
-                output.write(data, 0, count);
-            }
-            output.flush();
-            output.close();
-            input.close();
-            Toast.makeText(this, "图片下载完成", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent("IMAGE-DOWNLOADED");
-            LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
-        } catch (Exception e) {
-            Log.d(LOG_TAG, e.getMessage());
-        }
+        //Enqueue a new download and same the referenceId
+        long downloadReference = downloadManager.enqueue(request);
+        Log.d(LOG_TAG, "Download complete");
     }
 }

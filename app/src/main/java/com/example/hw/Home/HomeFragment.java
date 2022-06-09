@@ -67,7 +67,7 @@ public class HomeFragment extends Fragment {
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         final ViewPager viewPager = (ViewPager)v.findViewById(R.id.viewPager);
-        adapter = new PagerAdapter(getChildFragmentManager(), tabLayout.getTabCount());
+        adapter = new PagerAdapter(getChildFragmentManager(), tabLayout.getTabCount(),this.getContext());
         viewPager.setAdapter(adapter);
 
         // Setting a listener for clicks.

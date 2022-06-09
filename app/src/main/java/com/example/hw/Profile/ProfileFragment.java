@@ -167,8 +167,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                                             activity.startService(imgIntent);
                                         }
                                     }
-
-                                    Toast.makeText(v.getContext(), "获取成功", Toast.LENGTH_LONG).show();
                                 }
                             });
                         } else {

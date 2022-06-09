@@ -1,23 +1,50 @@
 package com.example.hw.Home.Status;
 
+import android.app.DownloadManager;
 import android.app.Service;
 import android.content.Intent;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
+import android.widget.Toast;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
+import com.example.hw.R;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 
 
 public class VideoService extends Service {
 
     private static final String LOG_TAG = VideoService.class.getSimpleName();
     // Media player
-    public MediaPlayer mediaPlayer;
+    String name;
+    String downloadUrl;
     // Used to pause/resume MediaPlayer
     private int resumePosition;
 
+    // Handler that receives messages from the thread
+    private final class ServiceHandler extends Handler {
+        public ServiceHandler(Looper looper) {
+            super(looper);
+        }
+        @Override
+        public void handleMessage(Message msg) {
+            downloadFile();
+            stopSelf(msg.arg1);
+        }
+    }
     private VideoBinder mBinder = new VideoBinder();
 
     public class VideoBinder extends Binder {
@@ -38,76 +65,46 @@ public class VideoService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        boolean isPlay = intent.getBooleanExtra("isPlay",true);
-        if(isPlay) {
-            boolean isPause = intent.getBooleanExtra("isPause", false);
-            boolean isRestart = intent.getBooleanExtra("isRestart", false);
-            if (isRestart) {
-                resumePosition = 0;
-                resumeMedia();
-            }
-            if (isPause) {
-                pauseMedia();
-            } else {
-                playMedia();
-            }
-        } else {
-            resumeMedia();
-        }
+        Log.d(LOG_TAG,"onStartCommand");
+        name = intent.getStringExtra("name");
+        String video_url;
+        video_url = getResources().getString(R.string.backend_url) + "video/" + name;
+        this.downloadUrl = video_url;
+        Log.d(LOG_TAG, this.downloadUrl);
+        downloadFile();
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Override
     public void onCreate(){
         super.onCreate();
-        // Create player
-        Log.d(LOG_TAG, "Media Player created");
-        mediaPlayer = new MediaPlayer();
-        String path = Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Movies/nevergonna.mp4";
-        try {
-            mediaPlayer.setDataSource(this, Uri.parse(path));
-            mediaPlayer.prepare();
-            mediaPlayer.setLooping(true);
-        } catch (Exception e) {
-            Log.d(LOG_TAG, e.getMessage());
-        }
+        Log.d(LOG_TAG,"onCreate");
     }
 
     @Override
     public void onDestroy() {
         Log.d(LOG_TAG, "Destroying...");
         super.onDestroy();
-        if (mediaPlayer != null) {
-            stopMedia();
-            mediaPlayer.release();
-        }
+    }
+    public void downloadFile(){
+        downloadFile(this.downloadUrl, this.name);
     }
 
-    private void playMedia() {
-        if (!mediaPlayer.isPlaying()) {
-            mediaPlayer.start();
-        }
-    }
+    public void downloadFile(String fileURL, String fileName) {
+        DownloadManager downloadManager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+        Uri Download_Uri = Uri.parse(fileURL);
+        DownloadManager.Request request = new DownloadManager.Request(Download_Uri);
 
-    private void stopMedia() {
-        if (mediaPlayer == null) return;
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.stop();
-        }
-    }
+        //Restrict the types of networks over which this download may proceed.
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI | DownloadManager.Request.NETWORK_MOBILE);
+        //Set whether this download may proceed over a roaming connection.
+        request.setAllowedOverRoaming(false);
+        request.setDestinationInExternalPublicDir(Environment.DIRECTORY_MOVIES,
+                File.separator + "/download_tmp" + File.separator + fileName);
 
-    private void pauseMedia() {
-        if (mediaPlayer.isPlaying()) {
-            mediaPlayer.pause();
-            resumePosition = mediaPlayer.getCurrentPosition();
-        }
-    }
-
-    private void resumeMedia() {
-        if (!mediaPlayer.isPlaying()) {
-            mediaPlayer.seekTo(resumePosition);
-            mediaPlayer.start();
-        }
+        //Enqueue a new download and same the referenceId
+        long downloadReference = downloadManager.enqueue(request);
+        Log.d(LOG_TAG, "Download complete");
     }
 
 }

@@ -5,7 +5,7 @@
     android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Post.PostFragment" >
+    tools:context=".Post.PostActivity" >
 
     <EditText
         android:id="@+id/postMsg"
@@ -25,17 +25,40 @@
         app:layout_constraintHorizontal_bias="0.375"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/postButton"
-        app:layout_constraintVertical_bias="0.183" />
+        app:layout_constraintVertical_bias="0.222" />
+
+    <Button
+        android:id="@+id/postPhotoButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="456dp"
+        android:layout_marginEnd="28dp"
+        android:text="拍照"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/postButton" />
 
     <ImageButton
         android:id="@+id/postButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:layout_marginEnd="10dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
         android:src="@android:drawable/ic_menu_send"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="36dp"
+        android:text="发布动态"
+        android:textColor="@color/purple_200"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/postTitle"
@@ -49,20 +72,28 @@
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/postMsg"
         app:layout_constraintEnd_toStartOf="@+id/postButton"
-        app:layout_constraintHorizontal_bias="0.051"
+        app:layout_constraintHorizontal_bias="0.046"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_bias="0.551" />
+
+    <ImageView
+        android:id="@+id/postPic_edit"
+        android:layout_width="105dp"
+        android:layout_height="96dp"
+        android:layout_marginEnd="80dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.053"
+        app:srcCompat="@drawable/ic_baseline_cloud_upload_24" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/filesize"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:text="发布动态"
-        android:textColor="@color/purple_200"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="文件大小"
+        app:layout_constraintTop_toBottomOf="@+id/postPic_edit"
+        tools:layout_editor_absoluteX="255dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

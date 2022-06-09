@@ -10,14 +10,14 @@
         android:id="@+id/titleView2"
         android:layout_width="294dp"
         android:layout_height="60dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="52dp"
         android:background="@android:drawable/editbox_background"
         android:text="TextView"
         android:textAlignment="center"
         android:textSize="34sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.452"
+        app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -25,14 +25,14 @@
         android:id="@+id/url"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="26dp"
+        android:layout_marginTop="4dp"
         android:clickable="true"
         android:drawablePadding="@dimen/cardview_compat_inset_shadow"
         android:textAlignment="center"
         android:textColor="@android:color/holo_blue_bright"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.413"
+        app:layout_constraintHorizontal_bias="0.365"
         app:layout_constraintStart_toEndOf="@+id/imageView"
         app:layout_constraintTop_toBottomOf="@+id/msgView" />
 
@@ -40,15 +40,15 @@
         android:id="@+id/map"
         android:layout_width="wrap_content"
         android:layout_height="26dp"
-        android:layout_marginBottom="52dp"
         android:clickable="true"
         android:textAlignment="center"
         android:textColor="@color/purple_200"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.413"
-        app:layout_constraintStart_toEndOf="@+id/imageView3" />
+        app:layout_constraintHorizontal_bias="0.365"
+        android:layout_marginStart="200dp"
+        android:layout_marginTop="40dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/msgView" />
 
     <ImageButton
         android:id="@+id/share_button"
@@ -57,10 +57,10 @@
         android:background="?attr/actionModeShareDrawable"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.542"
+        app:layout_constraintHorizontal_bias="0.6"
         app:layout_constraintStart_toEndOf="@+id/titleView2"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.093"
+        app:layout_constraintVertical_bias="0.032"
         app:srcCompat="?attr/actionModeShareDrawable" />
 
     <TextView
@@ -79,11 +79,33 @@
         android:id="@+id/msgView"
         android:layout_width="283dp"
         android:layout_height="89dp"
-        android:layout_marginTop="43dp"
+        android:layout_marginTop="8dp"
         android:background="@android:drawable/editbox_background_normal"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.453"
+        app:layout_constraintHorizontal_bias="0.21"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image" />
+
+    <ImageButton
+        android:id="@+id/commentButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp"
+        app:srcCompat="@android:drawable/stat_notify_chat"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.90"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/image" />
+
+    <Switch
+        android:id="@+id/likeSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.93"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/image" />
 
@@ -91,8 +113,8 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="4dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/msgView"
         app:srcCompat="@android:drawable/ic_dialog_info" />
@@ -101,10 +123,10 @@
         android:id="@+id/imageView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginBottom="52dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="100dp"
+        android:layout_marginTop="40dp"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/msgView"
         app:srcCompat="@android:drawable/ic_dialog_map" />
 
     <ImageButton
@@ -115,6 +137,26 @@
         android:layout_marginTop="12dp"
         android:background="@drawable/back_arrow"
         app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/creatorName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:layout_marginStart="70dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"  />
+
+    <Button
+        android:id="@+id/followed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="7dp"
+        android:text="关注"
+        app:layout_constraintStart_toEndOf="@+id/creatorName"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
@@ -131,11 +173,14 @@
         android:id="@+id/image"
         android:layout_width="288dp"
         android:layout_height="283dp"
-        android:layout_marginTop="28dp"
+        android:layout_marginTop="4dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.43"
+        app:layout_constraintHorizontal_bias="0.479"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleView2"
         app:srcCompat="@android:drawable/ic_menu_report_image" />
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

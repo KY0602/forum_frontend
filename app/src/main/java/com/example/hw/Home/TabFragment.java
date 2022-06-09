@@ -1,6 +1,8 @@
 package com.example.hw.Home;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,24 +10,50 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.hw.Home.Status.Status;
+import com.example.hw.MainActivity;
 import com.example.hw.R;
 
+import org.jetbrains.annotations.NotNull;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class TabFragment extends Fragment {
     private static final String LOG_TAG = TabFragment.class.getSimpleName();
     private final LinkedList<String> statusTypeAll = new LinkedList<>();
     private final LinkedList<String> statusTitleAll = new LinkedList<>();
     private final LinkedList<String> statusMsgAll = new LinkedList<>();
-    private ArrayList<String> type_list_all, title_list_all, msg_list_all;
+    private final LinkedList<String> statusidAll = new LinkedList<>();
+    private final LinkedList<String> statususeridAll = new LinkedList<>();
+    private final LinkedList<Status> statusAll = new LinkedList<>();
+    private ArrayList<String> type_list_all, title_list_all, msg_list_all,statusid_list_all,userid_list_all;
+    private ArrayList<Status> status_list_all;
     private RecyclerView status_all;
     private WordListAdapter mAdapter;
     private Button load_button;
+    private Button reload_button;
 
     public TabFragment(){
         // require a empty public constructor
@@ -40,36 +68,45 @@ public class TabFragment extends Fragment {
         statusTypeAll.clear();
         statusTitleAll.clear();
         statusMsgAll.clear();
+        statusidAll.clear();
+        statususeridAll.clear();
+        statusAll.clear();
 
         Bundle extras = this.getArguments();
         if (extras != null) {
             type_list_all = extras.getStringArrayList("EXTRA_TYPE");
             title_list_all = extras.getStringArrayList("EXTRA_TITLE");
             msg_list_all = extras.getStringArrayList("EXTRA_TEXT");
-            for (int i = 0; i < 10; i++)
-            {
-                statusTypeAll.addLast(type_list_all.get(i));
-                statusTitleAll.addLast(title_list_all.get(i));
-                statusMsgAll.addLast(msg_list_all.get(i));
-            }
+            statusid_list_all = extras.getStringArrayList("EXTRA_STATUS_ID");
+            userid_list_all = extras.getStringArrayList("EXTRA_USER_ID");
+            status_list_all = extras.<Status>getParcelableArrayList("EXTRA_STATUS");
+//            for (int i = 0; i < 10; i++)
+//            {
+//                statusTypeAll.addLast(type_list_all.get(i));
+//                statusTitleAll.addLast(title_list_all.get(i));
+//                statusMsgAll.addLast(msg_list_all.get(i));
+//            }
         }
-        statusTypeAll.addFirst("AUDIO");
-        statusTitleAll.addFirst("Music");
-        statusMsgAll.addFirst("This is a music.");
-
-        statusTypeAll.addFirst("VIDEO");
-        statusTitleAll.addFirst("Video");
-        statusMsgAll.addFirst("This is a video.");
+//        statusTypeAll.addFirst("AUDIO");
+//        statusTitleAll.addFirst("Music");
+//        statusMsgAll.addFirst("This is a music.");
+//
+//        statusTypeAll.addFirst("VIDEO");
+//        statusTitleAll.addFirst("Video");
+//        statusMsgAll.addFirst("This is a video.");
 
         load_button = v.findViewById(R.id.load_button);
         load_button.setOnClickListener(this::loadMore);
 
+        reload_button = v.findViewById(R.id.reload_button);
+        reload_button.setOnClickListener(this::reload);
+
         status_all = v.findViewById(R.id.recycle_all);
-        mAdapter = new WordListAdapter(getContext(), statusTypeAll, statusTitleAll, statusMsgAll);
+        mAdapter = new WordListAdapter(getContext(), statusTypeAll, statusTitleAll, statusMsgAll,statusidAll,statususeridAll,statusAll);
         status_all.setAdapter(mAdapter);
         LinearLayoutManager llm = new LinearLayoutManager((getContext()));
         status_all.setLayoutManager(llm);
-
+        loadMore(v);
         // 划到最底时会调用loadMore显示更多动态
         status_all.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -91,14 +128,21 @@ public class TabFragment extends Fragment {
             statusTypeAll.addLast(type_list_all.get(len+count));
             statusTitleAll.addLast(title_list_all.get(len+count));
             statusMsgAll.addLast(msg_list_all.get(len+count));
+            statusidAll.addLast(statusid_list_all.get(len+count));
+            statususeridAll.addLast(userid_list_all.get(len+count));
+            statusAll.addLast(status_list_all.get(len+count));
             count++;
             if (count > 9) break;
         }
         status_all.getAdapter().notifyItemInserted(len);
-        if (count == 0) {
-            Toast.makeText(getActivity().getApplicationContext(), "已没有更多动态", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(getActivity().getApplicationContext(), "已加载更多动态", Toast.LENGTH_SHORT).show();
-        }
+    }
+    // 当点击“重新加载”按钮
+    private void reload(View view) {
+        status_all = view.findViewById(R.id.recycle_all);
+        mAdapter = new WordListAdapter(getContext(), statusTypeAll, statusTitleAll, statusMsgAll,statusidAll,statususeridAll,statusAll);
+        status_all.setAdapter(mAdapter);
+        LinearLayoutManager llm = new LinearLayoutManager((getContext()));
+        status_all.setLayoutManager(llm);
+        loadMore(view);
     }
 }

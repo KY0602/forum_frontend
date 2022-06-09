@@ -1,71 +1,92 @@
+
+
+
+
+
+
+
+
+
 package com.example.hw.Home.Status;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ShareCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+        import androidx.appcompat.app.AppCompatActivity;
+        import androidx.core.app.ShareCompat;
+        import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
-import android.net.Uri;
-import android.os.Bundle;
-import android.os.IBinder;
-import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
+        import android.app.DownloadManager;
+        import android.content.BroadcastReceiver;
+        import android.content.ComponentName;
+        import android.content.Context;
+        import android.content.Intent;
+        import android.content.IntentFilter;
+        import android.content.ServiceConnection;
+        import android.net.Uri;
+        import android.os.Bundle;
+        import android.os.Environment;
+        import android.os.Handler;
+        import android.os.IBinder;
+        import android.util.Log;
+        import android.view.SurfaceHolder;
+        import android.view.SurfaceView;
+        import android.view.View;
+        import android.widget.AdapterView;
+        import android.widget.Button;
+        import android.widget.CompoundButton;
+        import android.widget.ImageButton;
+        import android.widget.ImageView;
+        import android.widget.MediaController;
+        import android.widget.Switch;
+        import android.widget.TextView;
+        import android.widget.Toast;
+        import android.widget.VideoView;
 
-import com.example.hw.MainActivity;
-import com.example.hw.Profile.OtherUserProfileActivity;
-import com.example.hw.Profile.PersonalPageActivity;
-import com.example.hw.R;
+        import com.example.hw.MainActivity;
+        import com.example.hw.Profile.OtherUserProfileActivity;
+        import com.example.hw.Profile.PersonalPageActivity;
+        import com.example.hw.Profile.StatusItemAdapter;
+        import com.example.hw.R;
 
-import org.jetbrains.annotations.NotNull;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+        import org.jetbrains.annotations.NotNull;
+        import org.json.JSONArray;
+        import org.json.JSONException;
+        import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+        import java.io.BufferedInputStream;
+        import java.io.File;
+        import java.io.FileOutputStream;
+        import java.io.IOException;
+        import java.io.InputStream;
+        import java.net.URL;
+        import java.net.URLConnection;
+        import java.text.ParseException;
+        import java.text.SimpleDateFormat;
+        import java.util.Date;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+        import okhttp3.Call;
+        import okhttp3.Callback;
+        import okhttp3.MediaType;
+        import okhttp3.OkHttpClient;
+        import okhttp3.Request;
+        import okhttp3.RequestBody;
+        import okhttp3.Response;
 
 public class StatusActivity extends AppCompatActivity {
     private static final String LOG_TAG = StatusActivity.class.getSimpleName();
-    private TextView titleView, msgView, urlText, mapText;
-    private ImageButton shareButton, backButton;
+    private TextView titleView, msgView, urlText, mapText, creatornameView;
+    private ImageButton shareButton, backButton,commentButton;
     private ImageView imageView;
-    private Button startButton, pauseButton;
-    private String user_id, media_image, status_id;
+    private Button startButton, pauseButton, followButton;
+    private String user_id, status_id;
+    private Status status;
+    private Switch likeSwitch;
+    MediaController mediaController;
+    private VideoView videoview;
 
     // For audio
     boolean isPlay_audio = false;
     boolean isPause_audio = false;
 
-    // For video
-    public SurfaceView surfaceView;
-    public SurfaceHolder holder;
-    private VideoService videoService;
-    private boolean bounded = false;
-    boolean isPlay_video = false;
-    boolean isPause_video = false;
+    boolean firstliked = false;
 
     @Override
     protected void onStart() {
@@ -98,36 +119,46 @@ public class StatusActivity extends AppCompatActivity {
         // with actions named "IMAGE-DOWNLOADED".
         LocalBroadcastManager.getInstance(this).registerReceiver(
                 mMessageReceiver, new IntentFilter("IMAGE-DOWNLOADED"));
+        registerReceiver(onCompleteReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         super.onResume();
     }
 
     // 图片下载完成时，将本地存储的图片添加到imageView中
     // Our handler for received Intents. This will be called whenever an Intent
     // with an action named "IMAGE-DOWNLOADED" is broadcast.
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver(){
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(LOG_TAG, "Image downloaded");
-            File imgFile = new File(getResources().getString(R.string.image_loc) + media_image);
-            imageView.setImageURI(Uri.fromFile(imgFile));
+            if (intent.getAction().equals("IMAGE-DOWNLOADED")) {
+                File imgFile = new File(getResources().getString(R.string.image_loc) + status.media);
+                imageView.setImageURI(Uri.fromFile(imgFile));
+            }
         }
     };
 
-    // 用以视频播放的service
-    // To get an instance of VideoService
-    private ServiceConnection serviceConnection = new ServiceConnection() {
+    private BroadcastReceiver onCompleteReceiver = new BroadcastReceiver() {
         @Override
-        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-            VideoService.VideoBinder videoBinder = (VideoService.VideoBinder) iBinder;
-            videoService = videoBinder.getService();
-            bounded = true;
-            Log.d(LOG_TAG, "Service Connected");
-        }
+        public void onReceive(Context context, Intent intent) {
+            Log.d(LOG_TAG, "VIDEO");
+            Toast.makeText(getApplicationContext(), "下载成功", Toast.LENGTH_LONG).show();
 
-        @Override
-        public void onServiceDisconnected(ComponentName componentName) {
-            Log.d(LOG_TAG, "Service disconnected");
-            bounded = false;
+            if(status.type.equals("IMAGE"))
+            {
+                Log.d(LOG_TAG, "onReceive: "+status.type);
+                File imgFile = new File(getResources().getString(R.string.image_loc) + status.media);
+                Log.d(LOG_TAG, "onReceive: "+imgFile.getPath());
+                imageView.setImageURI(Uri.fromFile(imgFile));
+            }else if(status.type.equals("AUDIO"))
+            {
+
+            }else if(status.type.equals("VIDEO")){
+                File file = new File(getResources().getString(R.string.video_loc) + status.media);
+                videoview = (VideoView)findViewById(R.id.videoview);
+                videoview.setVideoPath(file.getPath());
+            }
+
+//            mediaController.show();
+            //videoview.start();
         }
     };
 
@@ -137,13 +168,13 @@ public class StatusActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
+        status = extras.<Status>getParcelable("EXTRA_STATUS");
         status_id = extras.getString("status_id");
         user_id = extras.getString("user_id");
-
         String type = extras.getString("EXTRA_TYPE");
         String title = extras.getString("EXTRA_TITLE");
         String msg = extras.getString("EXTRA_TEXT");
-
+        getStatusInfo(status.type);
         // 通过intent传入的type判断需要执行什么
         // 3 Types of contents
         if (type.equals("AUDIO")) {
@@ -158,24 +189,179 @@ public class StatusActivity extends AppCompatActivity {
             Log.d(LOG_TAG, "Video");
             setContentView(R.layout.activity_status_video);
             MainActivity.verifyStoragePermissions(this);
-
-            surfaceView = findViewById(R.id.surfaceView);
-            holder = surfaceView.getHolder();
-
-            Intent videoIntent = new Intent(this, VideoService.class);
-            bindService(videoIntent, serviceConnection, Context.BIND_AUTO_CREATE);
-
-            startButton = findViewById(R.id.start);
-            startButton.setOnClickListener(this::startVideoPlayer);
-
-            pauseButton = findViewById(R.id.pause);
-            pauseButton.setOnClickListener(this::pauseVideoPlayer);
         } else {
             setContentView(R.layout.activity_status);
             imageView = findViewById(R.id.image);
             Log.d(LOG_TAG, status_id);
 
-            getStatusInfoImage();
+
+            //共同需要
+            creatornameView = findViewById(R.id.creatorName);
+            creatornameView.setText(status.creator_username);
+            followButton = findViewById(R.id.followed);
+            //chaxun followed
+            followButton.setOnClickListener(this::followCreator);
+            Log.d("userid", user_id);
+            Log.d("creatorid", status.creator_id);
+            if (user_id.equals(status.creator_id)) {
+                followButton.setText("(自己)");
+            } else {
+                String jsonStr = "{\"user_id\":\"" + user_id + "\"," + "\"user_id_followed\":\"" + status.creator_id + "\"}";
+                String requestUrl = getResources().getString(R.string.backend_url) + "check-follow";
+                try {
+                    OkHttpClient client = new OkHttpClient();
+                    MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
+
+                    @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
+                    Request request = new Request.Builder()
+                            .url(requestUrl)
+                            .post(body)
+                            .build();
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            Log.d("chechfollow", "fail");
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                            final String responseStr = response.body().string();
+                            try {
+                                Log.d("chechfollow", "respone");
+                                JSONObject jObject = new JSONObject(responseStr);
+                                boolean res_status = jObject.getBoolean("status");
+                                Log.d("chechfollow", jObject.toString());
+                                if (res_status) {
+                                    Log.d("chechfollow", "true");
+                                    boolean followed = jObject.getBoolean("following");
+                                    if (followed) {
+                                        StatusActivity.this.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                followButton.setText("已关注");
+                                            }
+                                        });
+                                    }
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            likeSwitch = findViewById(R.id.likeSwitch);
+            likeSwitch.setText(Integer.toString(status.like));
+            String jsonStr = "{\"user_id\":\"" + user_id + "\"," + "\"status_id\":\"" + status.status_id + "\"}";
+            String requestUrl = getResources().getString(R.string.backend_url) + "query-like";
+            try {
+                OkHttpClient client = new OkHttpClient();
+                MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
+
+                @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
+                Request request = new Request.Builder()
+                        .url(requestUrl)
+                        .post(body)
+                        .build();
+                client.newCall(request).enqueue(new Callback() {
+                    @Override
+                    public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                        Log.d("chechliked", "fail");
+                    }
+
+                    @Override
+                    public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                        final String responseStr = response.body().string();
+                        try {
+                            Log.d("chechliked", "respone");
+                            JSONObject jObject = new JSONObject(responseStr);
+                            boolean res_status = jObject.getBoolean("status");
+                            Log.d("chechliked", jObject.toString());
+                            if (res_status) {
+                                boolean ifliked = jObject.getBoolean("liked");
+                                StatusActivity.this.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        firstliked = ifliked;
+                                        if (ifliked) {
+                                            likeSwitch.setChecked(true);
+                                        } else {
+                                            likeSwitch.setChecked(false);
+                                        }
+                                    }
+                                });
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            likeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (firstliked) {
+                        Log.d("like-unlike", "firstlike!!!");
+                        firstliked = false;
+                        return;
+                    }
+                    String jsonStr = "{\"user_id\":\"" + user_id + "\"," + "\"status_id\":\"" + status.status_id + "\"}";
+                    String requestUrl = getResources().getString(R.string.backend_url) + "like-unlike";
+                    try {
+                        OkHttpClient client = new OkHttpClient();
+                        MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
+
+                        @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
+                        Request request = new Request.Builder()
+                                .url(requestUrl)
+                                .post(body)
+                                .build();
+                        client.newCall(request).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                                Log.d("like-unlike", "fail");
+                            }
+
+                            @Override
+                            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                                final String responseStr = response.body().string();
+                                try {
+                                    JSONObject jObject = new JSONObject(responseStr);
+                                    boolean res_status = jObject.getBoolean("status");
+                                    Log.d("like-unlike", jObject.toString());
+                                    if (res_status) {
+                                        StatusActivity.this.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                liked_unliked(isChecked, true);
+                                            }
+                                        });
+                                    } else {
+                                        StatusActivity.this.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                liked_unliked(isChecked, false);
+                                            }
+                                        });
+                                    }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            commentButton = findViewById(R.id.commentButton);
+            commentButton.setOnClickListener(this::clickComment);
         }
         titleView = findViewById(R.id.titleView2);
         titleView.setText(title);
@@ -202,12 +388,46 @@ public class StatusActivity extends AppCompatActivity {
             msgView.setText(savedInstanceState.getString("getMessage"));
         }
     }
+    public void clickComment(View v){
+        Bundle extras = new Bundle();
+        extras.putString("status_id", status.status_id);
+        extras.putString("user_id",user_id);
+        Intent intent  = new Intent(v.getContext(), CommentListActivity.class);
+        intent.putExtras(extras);
+        v.getContext().startActivity(intent);
+    }
 
-    private void getStatusInfoImage() {
-        String jsonStr = "{\"status_id\":\""+ status_id + "\"}";
-        String requestUrl = getResources().getString(R.string.backend_url) + "query-status";
+    public void liked_unliked(boolean isChecked, boolean ls) {
+        int like_count = Integer.parseInt(String.valueOf(likeSwitch.getText()));
+        if (isChecked) {
+            //选中状态
+            if (ls) {
+                Log.d("like-unlike", "LikeSuuss1");
+                like_count = like_count + 1;
+                likeSwitch.setText(Integer.toString(like_count));
+            } else {
+                likeSwitch.setChecked(false);
+            }
+        } else {
+            //未选中状态
+            if (ls) {
+                Log.d("like-unlike", "LikeSuuss2");
+                like_count = like_count - 1;
+                likeSwitch.setText(Integer.toString(like_count));
+            } else {
+                likeSwitch.setChecked(true);
+            }
+        }
+    }
 
-        try{
+    public void followCreator(View view) {
+        String followedstr = followButton.getText().toString();
+        if (followedstr.equals("(自己)")) {
+            return;
+        }
+        String jsonStr = "{\"user_id\":\"" + user_id + "\"," + "\"user_id_followed\":\"" + status.creator_id + "\"}";
+        String requestUrl = getResources().getString(R.string.backend_url) + "follow-unfollow";
+        try {
             OkHttpClient client = new OkHttpClient();
             MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
 
@@ -218,28 +438,120 @@ public class StatusActivity extends AppCompatActivity {
                     .build();
             client.newCall(request).enqueue(new Callback() {
                 @Override
-                public void onFailure(@NotNull Call call, @NotNull IOException e) {}
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    Log.d("follow", "fail");
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    final String responseStr = response.body().string();
+                    try {
+                        JSONObject jObject = new JSONObject(responseStr);
+                        boolean res_status = jObject.getBoolean("status");
+                        Log.d("follow", jObject.toString());
+                        if (res_status) {
+                            StatusActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (followedstr.equals("关注")) {
+                                        followButton.setText("已关注");
+                                    } else {
+                                        followButton.setText("关注");
+                                    }
+                                }
+                            });
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void isVideo(){
+        mediaController = new MediaController(this);
+        videoview = (VideoView)findViewById(R.id.videoview);
+        mediaController.setAnchorView(videoview);
+        videoview.setMediaController(mediaController);
+        //mediaController.show();
+        File file = new File(getResources().getString(R.string.video_loc) + status.media);
+        if (file.exists()) {
+            Log.d(LOG_TAG,"video already exists");
+            videoview.setVideoPath(file.getPath());
+            videoview.start();
+            //mediaController.show();
+        } else {
+            //downloadVideo(status.media);
+            Intent intent = new Intent(getBaseContext(), VideoService.class);
+            intent.putExtra("type", "status");
+            intent.putExtra("name", status.media);
+            startService(intent);
+        }
+    }
+    private void isMusic(){
+
+    }
+    private void isImage(){
+        File file = new File(getResources().getString(R.string.image_loc) + status.media);
+        // If image does not exist, start a service to download
+        if (file.exists()) {
+            imageView.setImageURI(Uri.fromFile(file));
+        } else {
+            Intent imgIntent = new Intent(getBaseContext(), ImageService.class);
+            imgIntent.putExtra("image_type", "status");
+            imgIntent.putExtra("image_name", status.media);
+            startService(imgIntent);
+        }
+    }
+    private void getStatusInfo(String type) {
+        Log.d("id=", status_id);
+        String jsonStr = "{\"status_id\":\"" + status_id + "\"}";
+        String requestUrl = getResources().getString(R.string.backend_url) + "query-status";
+
+        try {
+            OkHttpClient client = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
+
+            @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
+            Request request = new Request.Builder()
+                    .url(requestUrl)
+                    .post(body)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                }
+
                 @Override
                 public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                     final String responseStr = response.body().string();
                     try {
                         JSONObject jObject = new JSONObject(responseStr);
                         boolean query_status = jObject.getBoolean("status");
+                        Log.d("ss", jObject.toString());
                         if (query_status) {
-                            media_image = jObject.getString("media");
+                            Log.d("d", "s");
+                            status.media = jObject.getString("media");
+                            status.location = jObject.getString("location");
+                            status.like = jObject.getInt("like");
+                            Log.d(LOG_TAG, status.location);
+                            Log.d("media_image", status.media);
                             StatusActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    File imgFile = new File(getResources().getString(R.string.image_loc) + media_image);
-                                    // If image does not exist, start a service to download
-                                    if (imgFile.exists()) {
-                                        imageView.setImageURI(Uri.fromFile(imgFile));
-                                    } else {
-                                        Intent imgIntent = new Intent(getBaseContext(), ImageService.class);
-                                        imgIntent.putExtra("image_type", "status");
-                                        imgIntent.putExtra("image_name", media_image);
-                                        startService(imgIntent);
+                                    if(type.equals("TEXT")){
+                                        isImage();
+                                    }else if(type.equals("IMAGE")){
+                                        isImage();
+                                    }else if(type.equals("AUDIO")){
+                                        isMusic();
+                                    }else if(type.equals("VIDEO")){
+                                        isVideo();
                                     }
+
                                 }
                             });
                         } else {
@@ -255,8 +567,7 @@ public class StatusActivity extends AppCompatActivity {
                     }
                 }
             });
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -265,7 +576,7 @@ public class StatusActivity extends AppCompatActivity {
         MainActivity.verifyStoragePermissions(this);
         Intent intent = new Intent(getBaseContext(), MusicService.class);
         if (!isPlay_audio) {
-            intent.putExtra("isPlay",true);
+            intent.putExtra("isPlay", true);
             startService(intent);
         } else {
             stopService(intent);
@@ -277,54 +588,15 @@ public class StatusActivity extends AppCompatActivity {
         MainActivity.verifyStoragePermissions(this);
         Intent intent = new Intent(getBaseContext(), MusicService.class);
         if (!isPause_audio) {
-            intent.putExtra("isPlay",true);
-            intent.putExtra("isPause",true);
+            intent.putExtra("isPlay", true);
+            intent.putExtra("isPause", true);
             startService(intent);
         } else {
-            intent.putExtra("isPause",false);
+            intent.putExtra("isPause", false);
             startService(intent);
         }
         isPause_audio = !isPause_audio;
     }
-
-    public void startVideoPlayer(View view) {
-        Intent videoIntent = new Intent(this, VideoService.class);
-        if (bounded) {
-            videoService.mediaPlayer.setDisplay(holder);
-            if (!isPlay_video) {
-                videoIntent.putExtra("isPlay",true);
-                videoIntent.putExtra("isRestart", true);
-                startService(videoIntent);
-            } else {
-                videoIntent.putExtra("isPlay",true);
-                videoIntent.putExtra("isPause",true);
-                startService(videoIntent);
-            }
-            isPlay_video = !isPlay_video;
-        }
-    }
-
-    public void pauseVideoPlayer(View view) {
-        Intent videoIntent = new Intent(this, VideoService.class);
-        if (bounded) {
-            videoService.mediaPlayer.setDisplay(holder);
-            if (!isPause_video) {
-                videoIntent.putExtra("isPlay",true);
-                videoIntent.putExtra("isPause",true);
-                startService(videoIntent);
-            } else {
-                videoIntent.putExtra("isPause",false);
-                startService(videoIntent);
-            }
-            isPause_video = !isPause_video;
-        }
-    }
-
-    public void goBack(View view) {
-        finish();
-        super.onBackPressed();
-    }
-
     public void clickURL(View view) {
         // Get the URL text.
         String url = urlText.getText().toString();
@@ -365,5 +637,9 @@ public class StatusActivity extends AppCompatActivity {
                 .setChooserTitle(R.string.share_text_with)
                 .setText(txt)
                 .startChooser();
+    }
+    public void goBack(View view) {
+        finish();
+        super.onBackPressed();
     }
 }

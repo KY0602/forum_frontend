@@ -3,7 +3,6 @@ package com.example.hw;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
@@ -14,17 +13,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Toast;
 
 import com.example.hw.Home.HomeFragment;
-import com.example.hw.Post.PostFragment;
+import com.example.hw.Post.PostActivity;
+import com.example.hw.Post.PostTypeSelectFragment;
 import com.example.hw.Profile.ProfileFragment;
 import com.example.hw.Search.SearchFragment;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
-import com.google.firebase.messaging.FirebaseMessaging;
 
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
@@ -47,7 +45,8 @@ public class MainActivity extends AppCompatActivity{
     private ViewPager viewPagerMain;
     BottomNavigationView bottomNavigationView;
     HomeFragment homeFragment = new HomeFragment();
-    PostFragment postFragment = new PostFragment();
+    PostActivity postActivity = new PostActivity();
+    PostTypeSelectFragment posttypeselectFragment = new PostTypeSelectFragment();
     SearchFragment searchFragment = new SearchFragment();
     ProfileFragment profileFragment = new ProfileFragment();
     public String user_id;
@@ -85,7 +84,7 @@ public class MainActivity extends AppCompatActivity{
 
         pagerAdapter = new BottomBarAdapter(getSupportFragmentManager());
         pagerAdapter.addFragments(homeFragment);
-        pagerAdapter.addFragments(postFragment);
+        pagerAdapter.addFragments(posttypeselectFragment);
         pagerAdapter.addFragments(searchFragment);
         pagerAdapter.addFragments(profileFragment);
 
