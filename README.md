@@ -8,7 +8,7 @@
   - 登录时将token(用以接收push notifications)传给后端保存
 - BottomBarAdapter.java，SmartFragmentStatePagerAdapter.java : 
   - 底部导航（Bottom Navigation）和fragment的adapter，应该不需要修改
-- NotificationService.java ：
+- NotificationService.java, notifications.xml：
   - 处理后端的Push Notification
   - [参考](https://www.geeksforgeeks.org/adding-firebase-to-android-app/)
 
@@ -79,4 +79,8 @@
   - 从后端得到列表后通过broadcast方式通知activity开始展示列表
   - 可以通过点击动态进入“动态详情页面”（StatusActivity）
 - StatusItemAdapter，status_list_item_layout.xml
+  - ListView中item的Adapter和layout
+- NotificationsActivity.java, activity_notifications.xml
+  - 通知列表，可以通过点击“通知”直接进入相应的动态
+- NotifyItemAdapter.java, notify_list_item_layout.xml
   - ListView中item的Adapter和layout
