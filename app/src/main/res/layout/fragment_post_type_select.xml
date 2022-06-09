@@ -7,43 +7,47 @@
     android:layout_height="match_parent"
     tools:context=".Post.PostTypeSelectFragment">
 
-    <Button
+    <ImageButton
         android:id="@+id/btntypeImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="160dp"
-        android:layout_marginBottom="220dp"
-        android:text="图文"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_width="140dp"
+        android:layout_height="130dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="92dp"
+        android:background="@drawable/round_corner"
+        android:src="@drawable/post_picture"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <ImageButton
         android:id="@+id/btntypeAudio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="160dp"
-        android:layout_marginBottom="108dp"
-        android:text="音频"
-        app:layout_constraintBottom_toTopOf="@+id/btntypeImage"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_width="140dp"
+        android:layout_height="130dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="76dp"
+        android:background="@drawable/round_corner"
+        android:src="@drawable/post_audio"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btntypeImage" />
 
-    <Button
-        android:id="@+id/btntypeVideo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="160dp"
-        android:layout_marginBottom="108dp"
-        android:text="视频"
-        app:layout_constraintBottom_toTopOf="@+id/btntypeAudio"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <Button
+    <ImageButton
         android:id="@+id/btntypeDraft"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="0dp"
-        android:layout_marginBottom="0dp"
-        android:text="草稿箱"
-        app:layout_constraintBottom_toTopOf="@+id/btntypeAudio"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_width="140dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="76dp"
+        android:layout_marginEnd="44dp"
+        android:background="@drawable/round_corner"
+        android:src="@drawable/post_draft"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btntypeVideo" />
+
+    <ImageButton
+        android:id="@+id/btntypeVideo"
+        android:layout_width="140dp"
+        android:layout_height="130dp"
+        android:layout_marginTop="92dp"
+        android:layout_marginEnd="44dp"
+        android:background="@drawable/round_corner"
+        android:src="@drawable/post_video"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

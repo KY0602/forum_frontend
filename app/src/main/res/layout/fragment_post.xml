@@ -12,9 +12,8 @@
         android:layout_width="375dp"
         android:layout_height="400dp"
         android:layout_marginStart="10dp"
-        android:layout_marginTop="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginBottom="25dp"
+        android:layout_marginBottom="164dp"
         android:background="@android:drawable/editbox_background_normal"
         android:ems="10"
         android:gravity="start|top"
@@ -23,9 +22,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.375"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/postButton"
-        app:layout_constraintVertical_bias="0.222" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/postPhotoButton"
@@ -41,11 +38,11 @@
         android:id="@+id/postButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="25dp"
         android:src="@android:drawable/ic_menu_send"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintBottom_toTopOf="@+id/postMsg"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
         android:id="@+id/textView"
@@ -64,36 +61,29 @@
         android:id="@+id/postTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="10dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="25dp"
         android:ems="10"
         android:hint="标题"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/postMsg"
-        app:layout_constraintEnd_toStartOf="@+id/postButton"
-        app:layout_constraintHorizontal_bias="0.046"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        app:layout_constraintVertical_bias="0.551" />
+        app:layout_constraintVertical_bias="0.724" />
 
     <ImageView
         android:id="@+id/postPic_edit"
-        android:layout_width="105dp"
-        android:layout_height="96dp"
-        android:layout_marginEnd="80dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_width="75dp"
+        android:layout_height="72dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginBottom="25dp"
+        app:layout_constraintBottom_toTopOf="@+id/postMsg"
+        app:layout_constraintEnd_toStartOf="@+id/postButton"
+        app:layout_constraintHorizontal_bias="0.523"
+        app:layout_constraintStart_toEndOf="@+id/postTitle"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.053"
-        app:srcCompat="@drawable/ic_baseline_cloud_upload_24" />
-
-    <TextView
-        android:id="@+id/filesize"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="文件大小"
-        app:layout_constraintTop_toBottomOf="@+id/postPic_edit"
-        tools:layout_editor_absoluteX="255dp" />
+        app:layout_constraintVertical_bias="1.0"
+        app:srcCompat="@drawable/post_picture_dark" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

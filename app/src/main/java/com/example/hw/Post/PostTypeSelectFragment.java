@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -19,10 +20,7 @@ public class PostTypeSelectFragment extends Fragment implements View.OnClickList
     private String type;
     private String user_id;
     private AppCompatActivity activity;
-    private Button btnImage;
-    private Button btnAudio;
-    private Button btnVideo;
-    private Button btnDraft;
+    private ImageButton btnImage, btnVideo, btnAudio, btnDraft;
     private String START_POST;
 
     public PostTypeSelectFragment() {
@@ -35,13 +33,13 @@ public class PostTypeSelectFragment extends Fragment implements View.OnClickList
         activity = (AppCompatActivity)v.getContext();
         MainActivity mainActivity = (MainActivity) activity;
         user_id = mainActivity.user_id;
-        btnImage =(Button)v.findViewById(R.id.btntypeImage);
+        btnImage = (ImageButton)v.findViewById(R.id.btntypeImage);
         btnImage.setOnClickListener(this);
-        btnAudio =(Button)v.findViewById(R.id.btntypeAudio);
+        btnAudio =(ImageButton)v.findViewById(R.id.btntypeAudio);
         btnAudio.setOnClickListener(this);
-        btnVideo =(Button)v.findViewById(R.id.btntypeVideo);
+        btnVideo =(ImageButton)v.findViewById(R.id.btntypeVideo);
         btnVideo.setOnClickListener(this);
-        btnDraft =(Button)v.findViewById(R.id.btntypeDraft);
+        btnDraft =(ImageButton)v.findViewById(R.id.btntypeDraft);
         btnDraft.setOnClickListener(this);
         return v;
     }

@@ -79,16 +79,22 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     private String cur_location;
     private File file = null;
     private String posttype;
+    private MediaRecorder mediaRecorder;
+    private String audioFileName;
     private String user_id, draft_id;
     private double cur_lat = 10;
     private double cur_lon = 19;
     private HashSet<String> draftset;
-    private TextView fileSizeView;
     String img_src;
     public static final int REQUEST_TAKE_PHOTO = 100;
     public static final int REQUEST_SELECT_PICTURE = 200;
+    public static final int REQUEST_SELECT_AUDIO = 250;
     public static final int REQUEST_SELECT_VIDEO = 300;
     public static final int REQUEST_TAKE_VIDEO = 400;
+    private String recordPermission = Manifest.permission.RECORD_AUDIO;
+    private int PERMISSION_CODE = 21;
+    private boolean isRecording = false;
+    private Uri audioUri = null; // 오디오 파일 uri
 
     public PostActivity() {
         // require a empty public constructor
@@ -128,7 +134,6 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         user_id = extras.getString("user_id");
         Log.d("posttype", posttype);
         btnCamera = (Button) findViewById(R.id.postPhotoButton);
-        fileSizeView = findViewById(R.id.filesize);
         profile_pic_edit = findViewById(R.id.postPic_edit);
         profile_pic_edit.setOnClickListener(this::chooseImage);
         if (posttype.equals("txtandimg")) {
@@ -137,12 +142,12 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             btnCamera.setText("拍照");
         } else if (posttype.equals("audio")) {
             profile_pic_edit.setVisibility(View.VISIBLE);
-            profile_pic_edit.setImageResource(R.drawable.img);
+            profile_pic_edit.setImageResource(R.drawable.post_audio_dark);
             profile_pic_edit.setOnClickListener(this::chooseAudio);
             btnCamera.setText("录音");
         } else if (posttype.equals("video")) {
             profile_pic_edit.setVisibility(View.VISIBLE);
-            profile_pic_edit.setImageResource(R.drawable.img_2);
+            profile_pic_edit.setImageResource(R.drawable.post_video_dark);
             profile_pic_edit.setOnClickListener(this::chooseVideo);
             btnCamera.setText("录像");
         }
@@ -163,119 +168,154 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         // 카메라 촬영을 하면 이미지뷰에 사진 삽입
-        if (resultCode == RESULT_OK) {
-            if (requestCode == REQUEST_TAKE_PHOTO) {
-                File file = new File(mCurrentFilePath);
-                this.file = file;
-                Bitmap bitmap = null;
+        if (requestCode == REQUEST_TAKE_PHOTO) {
+            File file = new File(mCurrentFilePath);
+            this.file = file;
+            Bitmap bitmap = null;
+            try {
+                bitmap = MediaStore.Images.Media
+                        .getBitmap(getContentResolver(), Uri.fromFile(file));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (bitmap != null) {
+                Log.d("bitmap", bitmap.toString());
+                ExifInterface ei = null;
                 try {
-                    bitmap = MediaStore.Images.Media
-                            .getBitmap(getContentResolver(), Uri.fromFile(file));
+                    ei = new ExifInterface(mCurrentFilePath);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_UNDEFINED);
+                Bitmap rotatedBitmap = null;
+                switch (orientation) {
 
-                if (bitmap != null) {
-                    Log.d("bitmap", bitmap.toString());
-                    ExifInterface ei = null;
-                    try {
-                        ei = new ExifInterface(mCurrentFilePath);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION,
-                            ExifInterface.ORIENTATION_UNDEFINED);
-                    Bitmap rotatedBitmap = null;
-                    switch (orientation) {
+                    case ExifInterface.ORIENTATION_ROTATE_90:
+                        rotatedBitmap = rotateImage(bitmap, 90);
+                        break;
 
-                        case ExifInterface.ORIENTATION_ROTATE_90:
-                            rotatedBitmap = rotateImage(bitmap, 90);
-                            break;
+                    case ExifInterface.ORIENTATION_ROTATE_180:
+                        rotatedBitmap = rotateImage(bitmap, 180);
+                        break;
 
-                        case ExifInterface.ORIENTATION_ROTATE_180:
-                            rotatedBitmap = rotateImage(bitmap, 180);
-                            break;
+                    case ExifInterface.ORIENTATION_ROTATE_270:
+                        rotatedBitmap = rotateImage(bitmap, 270);
+                        break;
 
-                        case ExifInterface.ORIENTATION_ROTATE_270:
-                            rotatedBitmap = rotateImage(bitmap, 270);
-                            break;
-
-                        case ExifInterface.ORIENTATION_NORMAL:
-                        default:
-                            rotatedBitmap = bitmap;
-                    }
-                    Log.d("rotated", rotatedBitmap.toString());
-                    //Rotate한 bitmap을 ImageView에 저장
-                    profile_pic_edit.setImageBitmap(rotatedBitmap);
-
-
+                    case ExifInterface.ORIENTATION_NORMAL:
+                    default:
+                        rotatedBitmap = bitmap;
                 }
-            } else if (requestCode == REQUEST_TAKE_VIDEO) {
-                File file = new File(mCurrentFilePath);
-                this.file = file;
-            } else if (requestCode == REQUEST_SELECT_PICTURE) {
-                if (data == null) {
-                    Log.d("", "exit");
-                } else {
-                    Uri selectedImageUri = data.getData();
-                    if (selectedImageUri != null) {
-                        profile_pic_edit.setImageURI(selectedImageUri);
+                Log.d("rotated", rotatedBitmap.toString());
+                //Rotate한 bitmap을 ImageView에 저장
+                profile_pic_edit.setImageBitmap(rotatedBitmap);
 
-                        // Get actual file URI
-                        String wholeID = DocumentsContract.getDocumentId(selectedImageUri);
-                        String id = wholeID.split(":")[1];
-                        String[] column = {MediaStore.Images.Media.DATA};
-                        String sel = MediaStore.Images.Media._ID + "=?";
 
-                        Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                                column, sel, new String[]{id}, null);
+            }
+        } else if (requestCode == REQUEST_TAKE_VIDEO) {
+            File file = new File(mCurrentFilePath);
+            this.file = file;
+        } else if (requestCode == REQUEST_SELECT_PICTURE) {
+            if (data == null) {
+                Log.d("", "exit");
+            } else {
+                Uri selectedImageUri = data.getData();
+                if (selectedImageUri != null) {
+                    profile_pic_edit.setImageURI(selectedImageUri);
 
-                        int columnIndex = cursor.getColumnIndex(column[0]);
+                    // Get actual file URI
+                    String wholeID = DocumentsContract.getDocumentId(selectedImageUri);
+                    String id = wholeID.split(":")[1];
+                    String[] column = {MediaStore.Images.Media.DATA};
+                    String sel = MediaStore.Images.Media._ID + "=?";
 
-                        if (cursor.moveToFirst()) {
-                            img_src = cursor.getString(columnIndex);
-                            Log.d(LOG_TAG, img_src);
-                        }
-                        cursor.close();
+                    Cursor cursor = getContentResolver().query(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                            column, sel, new String[]{id}, null);
 
-                        // Upload
-                        file = new File(img_src);
-                        //Log.d("file",file);
+                    int columnIndex = cursor.getColumnIndex(column[0]);
+
+                    if (cursor.moveToFirst()) {
+                        img_src = cursor.getString(columnIndex);
+                        Log.d(LOG_TAG, img_src);
                     }
+                    cursor.close();
+
+                    // Upload
+                    file = new File(img_src);
+                    //Log.d("file",file);
                 }
+            }
 
-            } else if (requestCode == REQUEST_SELECT_VIDEO) {
-                Log.d(LOG_TAG, "video here");
-                if (data == null) {
-                    Log.d("", "exit");
-                } else {
-                    Uri selectedVideoUri = data.getData();
-                    if (selectedVideoUri != null) {
-                        //profile_pic_edit.setImageURI(selectedVideoUri);
+        } else if (requestCode == REQUEST_SELECT_VIDEO) {
+            Log.d(LOG_TAG, "video here");
+            if (data == null) {
+                Log.d("", "exit");
+            } else {
+                Uri selectedVideoUri = data.getData();
+                if (selectedVideoUri != null) {
+                    //profile_pic_edit.setImageURI(selectedVideoUri);
+                    Log.d(LOG_TAG,selectedVideoUri.toString());
+                    // Get actual file URI
+                    String wholeID = DocumentsContract.getDocumentId(selectedVideoUri);
+                    String id = wholeID.split(":")[1];
+                    String[] column = {MediaStore.Video.Media.DATA};
+                    String sel = MediaStore.Video.Media._ID + "=?";
 
-                        // Get actual file URI
-                        String wholeID = DocumentsContract.getDocumentId(selectedVideoUri);
-                        String id = wholeID.split(":")[1];
-                        String[] column = {MediaStore.Video.Media.DATA};
-                        String sel = MediaStore.Video.Media._ID + "=?";
+                    Cursor cursor = getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
+                            column, sel, new String[]{id}, null);
 
-                        Cursor cursor = getContentResolver().query(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,
-                                column, sel, new String[]{id}, null);
+                    int columnIndex = cursor.getColumnIndex(column[0]);
 
-                        int columnIndex = cursor.getColumnIndex(column[0]);
-
-                        if (cursor.moveToFirst()) {
-                            img_src = cursor.getString(columnIndex);
-                            Log.d(LOG_TAG, img_src);
-                        }
-                        cursor.close();
-                        Log.d("ing_src=", img_src);
-                        // Upload
-                        file = new File(img_src);
-
-                        //fileSizeView.setText((int) file.length());
-                        //Log.d("file",file);
+                    if (cursor.moveToFirst()) {
+                        img_src = cursor.getString(columnIndex);
+                        //Log.d(LOG_TAG, img_src);
                     }
+                    cursor.close();
+                    //Log.d("ing_src=", img_src);
+                    // Upload
+                    file = new File(img_src);
+
+                    //fileSizeView.setText((int) file.length());
+                    //Log.d("file",file);
+                }
+            }
+        }else if (requestCode == REQUEST_SELECT_AUDIO) {
+            Log.d(LOG_TAG, "audio here");
+            if (data == null) {
+                Log.d(LOG_TAG, "exit");
+            } else {
+                Log.d(LOG_TAG, "1e");
+                Uri selectedUri = data.getData();
+                Log.d(LOG_TAG, "2");
+                if (selectedUri != null) {
+                    //profile_pic_edit.setImageURI(selectedVideoUri);
+                    Log.d(LOG_TAG, "3");
+                    // Get actual file URI
+                    Log.d(LOG_TAG,selectedUri.toString());
+                    String wholeID = DocumentsContract.getDocumentId(selectedUri);
+                    Log.d(LOG_TAG, "4");
+                    String id = wholeID.split(":")[1];
+                    String[] column = {MediaStore.Audio.Media.DATA};
+                    String sel = MediaStore.Audio.Media._ID + "=?";
+                    Log.d(LOG_TAG, "5");
+                    Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+                            column, sel, new String[]{id}, null);
+
+                    int columnIndex = cursor.getColumnIndex(column[0]);
+
+                    if (cursor.moveToFirst()) {
+                        img_src = cursor.getString(columnIndex);
+                        Log.d(LOG_TAG, img_src);
+                    }
+                    cursor.close();
+                    Log.d(LOG_TAG, img_src);
+                    // Upload
+                    file = new File(img_src);
+
+                    //fileSizeView.setText((int) file.length());
+                    //Log.d("file",file);
                 }
             }
         }
@@ -295,33 +335,22 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
 
         startActivityForResult(intent, REQUEST_SELECT_PICTURE);
     }
-
-    private void chooseAudio(View view) {
-        MediaRecorder recorder = new MediaRecorder();
-//设置音频资源的来源包括：麦克风，通话上行，通话下行等；程序中设定音频来源为麦克风
-
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-//设置输出文件的格式如3gp、mpeg4等
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-//设置音频编码器，程序中设定音频编码为AMR窄带编码
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-//设置文件输出路径，程序中的PATH_NAME要用实际路径替换掉
-        recorder.setOutputFile(Environment.getExternalStorageDirectory().getPath()+"/Music/KakaoTalk/nevergonna.mp3");
-//准备开始，这就在start前，必须调用
-        try {
-            recorder.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
+    private boolean checkAudioPermission() {
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), recordPermission) == PackageManager.PERMISSION_GRANTED) {
+            Log.i(LOG_TAG, "checkAudioPermission: audiopermission");
+            return true;
+        } else {
+            Log.i(LOG_TAG, "checkAudioPermission: audio not permission");
+            ActivityCompat.requestPermissions(this, new String[]{recordPermission}, PERMISSION_CODE);
+            return false;
         }
+    }
+    private void chooseAudio(View view) {
+        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
+        intent.setType("audio/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
 
-        recorder.start();   // Recording is now started
-//开始后调用，但是如果刚刚开始就停止会抛出异常
-        recorder.stop();
-//将MediaRecorder置于空闲状况，如果要重新启动MediaRecorder需要重新配置参数
-        recorder.reset();   // You can reuse the object by going back to setAudioSource() step
-//释放MediaRecorder相关资源，如果不再调用MediaRecorder就要把资源释放掉。
-
-        recorder.release(); // Now the object cannot be reused
+        startActivityForResult(intent, REQUEST_SELECT_AUDIO);
     }
 
     private void chooseVideo(View view) {
@@ -483,6 +512,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                 if (posttype.equals("txtandimg"))
                     capture();
                 else if (posttype.equals("audio")) {
+                    recordAudio();
 
                 } else if (posttype.equals("video")) {
                     recordVideo();
@@ -493,6 +523,84 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                 Log.d(LOG_TAG, "No match");
                 break;
         }
+    }
+    public void recordAudio(){
+        if(isRecording){
+            isRecording = false;
+            btnCamera.setText("开始录音");
+            //Toast.makeText(activity, "结束录音", Toast.LENGTH_SHORT).show();
+            stopRecording();
+        }else{
+            if(checkAudioPermission())
+            {
+                isRecording = true;
+                postButton.setVisibility(View.INVISIBLE);
+                btnCamera.setText("结束录音");
+                //Toast.makeText(activity, "开始录音", Toast.LENGTH_SHORT).show();
+                String recordPath = getExternalFilesDir("/").getAbsolutePath();
+                // 파일 이름 변수를 현재 날짜가 들어가도록 초기화. 그 이유는 중복된 이름으로 기존에 있던 파일이 덮어 쓰여지는 것을 방지하고자 함.
+                String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                audioFileName = recordPath+ "/" +"RecordExample_" + timeStamp + "_"+"audio.mp3";
+                Log.d(TAG, "recordAudio: "+audioFileName);
+//            MediaRecorder recorder = new MediaRecorder();
+////设置音频资源的来源包括：麦克风，通话上行，通话下行等；程序中设定音频来源为麦克风
+//
+//            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+////设置输出文件的格式如3gp、mpeg4等
+//            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+////设置音频编码器，程序中设定音频编码为AMR窄带编码
+//            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+////设置文件输出路径，程序中的PATH_NAME要用实际路径替换掉
+//            recorder.setOutputFile(audioFileName);
+                mediaRecorder = new MediaRecorder();
+                mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+                mediaRecorder.setOutputFile(audioFileName);
+                mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+//准备开始，这就在start前，必须调用
+                try {
+                    mediaRecorder.prepare();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                mediaRecorder.start();   // Recording is now started
+////开始后调用，但是如果刚刚开始就停止会抛出异常
+//            recorder.stop();
+////将MediaRecorder置于空闲状况，如果要重新启动MediaRecorder需要重新配置参数
+//            recorder.reset();   // You can reuse the object by going back to setAudioSource() step
+//释放MediaRecorder相关资源，如果不再调用MediaRecorder就要把资源释放掉。
+
+                //recorder.release(); // Now the object cannot be reused
+            }else{
+                Toast.makeText(activity, "请先获取录音权限", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+    }
+
+    private void stopRecording() {
+        // 녹음 종료 종료
+        mediaRecorder.stop();
+        mediaRecorder.release();
+        mediaRecorder = null;
+        postButton.setVisibility(View.VISIBLE);
+        this.file = new File(audioFileName);
+
+        // 파일 경로(String) 값을 Uri로 변환해서 저장
+        //      - Why? : 리사이클러뷰에 들어가는 ArrayList가 Uri를 가지기 때문
+        //      - File Path를 알면 File을  인스턴스를 만들어 사용할 수 있기 때문
+//        audioUri = Uri.parse(audioFileName);
+//
+//
+//        // 데이터 ArrayList에 담기
+//        audioList.add(audioUri);
+//
+//
+//        // 데이터 갱신
+//        audioAdapter.notifyDataSetChanged();
+
     }
 
     public void recordVideo() {
@@ -619,28 +727,16 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                                 .build();
                     }
                 } else {
-                    if (cur_location == null) {
-                        requestBody = new MultipartBody.Builder()
-                                .setType(MultipartBody.FORM)
-                                .addFormDataPart("user_id", user_id)
-                                .addFormDataPart("type", type)
-                                .addFormDataPart("title", title)
-                                .addFormDataPart("text", msg)
-                                .addFormDataPart("media", file.getName(),
-                                        RequestBody.create(MediaType.parse("image/*"), file))
-                                .build();
-                    } else {
-                        requestBody = new MultipartBody.Builder()
-                                .setType(MultipartBody.FORM)
-                                .addFormDataPart("user_id", user_id)
-                                .addFormDataPart("type", type)
-                                .addFormDataPart("title", title)
-                                .addFormDataPart("text", msg)
-                                .addFormDataPart("media", file.getName(),
-                                        RequestBody.create(MediaType.parse("image/*"), file))
-                                .addFormDataPart("location", cur_location)
-                                .build();
-                    }
+                    requestBody = new MultipartBody.Builder()
+                            .setType(MultipartBody.FORM)
+                            .addFormDataPart("user_id", user_id)
+                            .addFormDataPart("type", type)
+                            .addFormDataPart("title", title)
+                            .addFormDataPart("text", msg)
+                            .addFormDataPart("media", file.getName(),
+                                    RequestBody.create(MediaType.parse("image/*"), file))
+                            .addFormDataPart("location", cur_location)
+                            .build();
                 }
                 Request request = new Request.Builder()
                         .url(requestUrl).post(requestBody)

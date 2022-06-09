@@ -135,6 +135,11 @@ public class TabFragment extends Fragment {
             if (count > 9) break;
         }
         status_all.getAdapter().notifyItemInserted(len);
+//        if (count == 0) {
+//            Toast.makeText(getActivity().getApplicationContext(), "已没有更多动态", Toast.LENGTH_SHORT).show();
+//        } else {
+//            Toast.makeText(getActivity().getApplicationContext(), "已加载更多动态", Toast.LENGTH_SHORT).show();
+//        }
     }
     // 当点击“重新加载”按钮
     private void reload(View view) {

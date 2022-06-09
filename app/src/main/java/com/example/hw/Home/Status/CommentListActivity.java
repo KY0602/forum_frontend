@@ -62,15 +62,14 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class CommentListActivity  extends AppCompatActivity {
+public class CommentListActivity  extends AppCompatActivity{
     private String user_id, status_id;
     ImageView empty_tray;
-    TextView empty_txt;
+    TextView empty_txt,delete_txt;
     ListView commentListView;
     ProgressBar spinner;
     Button write_comment;
     ArrayList<Comment> comment_list = new ArrayList<Comment>();
-
 
     @Override
     protected void onStart() {
@@ -92,6 +91,7 @@ public class CommentListActivity  extends AppCompatActivity {
         spinner = findViewById(R.id.progressBar_comment_list);
         write_comment = findViewById(R.id.write_comment);
         write_comment.setOnClickListener(this::writeComment);
+
 //        getCommentList();
 
     }
@@ -121,25 +121,17 @@ public class CommentListActivity  extends AppCompatActivity {
             }
 
             spinner.setVisibility(View.GONE);
-            commentListView.setAdapter(new CommentItemAdapter(getApplicationContext(), comment_list));
+            commentListView.setAdapter(new CommentItemAdapter(getApplicationContext(), comment_list,user_id,status_id));
             commentListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
                 @Override
                 public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-//                    Intent intent = new Intent(getApplicationContext(), StatusActivity.class);
-//                    Bundle extras = new Bundle();
-//                    String status_id = comment_list.get(i).status_id;
-//                    String type = comment_list.get(i).type;
-//                    String title = comment_list.get(i).title;
-//                    String text = comment_list.get(i).text;
-//                    extras.putString("status_id", status_id);
-//                    extras.putString("user_id", user_id_self);
-//                    extras.putString("EXTRA_TYPE", type);
-//                    extras.putString("EXTRA_TITLE", title);
-//                    extras.putString("EXTRA_TEXT", text);
-//                    extras.<Status>putParcelable("EXTRA_STATUS",comment_list.get(i));
-//                    intent.putExtras(extras);
-//                    startActivity(intent);
+                    Intent intent = new Intent(getApplicationContext(), OtherUserProfileActivity.class);
+                    Bundle extras = new Bundle();
+                    extras.putString("user_id_self", user_id);
+                    extras.putString("user_id_other", comment_list.get(i).creator_user_id);
+                    intent.putExtras(extras);
+                    startActivity(intent);
                 }
             });
         }
@@ -223,3 +215,58 @@ public class CommentListActivity  extends AppCompatActivity {
     }
 
 }
+
+//class MyDButton implements View.OnClickListener {
+//    String user_id,comment_id,status_id,creator_id;
+//    Context context;
+//
+//    public MyDButton( String user_id,String comment_id,String creator_id,String status_id, Context context){
+//        this.user_id=user_id;
+//        this.status_id=status_id;
+//        this.creator_id=creator_id;
+//        this.comment_id=comment_id;
+//        this.context=context;
+//    }
+//
+//    @Override
+//    public void onClick(View v) {
+//        String jsonStr = "{\"user_id\":\"" + user_id + "\",\"comment_id\":\"" + comment_id
+//                + "\",\"status_id\":\"" + status_id + "\"}";
+//        String requestUrl = context.getResources().getString(R.string.backend_url) + "delete-comment";
+//
+//        try {
+//            OkHttpClient client = new OkHttpClient();
+//            MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
+//
+//            @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
+//            Request request = new Request.Builder()
+//                    .url(requestUrl)
+//                    .post(body)
+//                    .build();
+//            client.newCall(request).enqueue(new Callback() {
+//                @Override
+//                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+//                }
+//
+//                @Override
+//                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+//                    final String responseStr = response.body().string();
+//                    try {
+//                        JSONObject jObject = new JSONObject(responseStr);
+//                        boolean query_status = jObject.getBoolean("status");
+//                        Log.d("delete_comment", jObject.toString());
+//                        if (query_status) {
+//
+//                        } else {
+//                            Log.d("delete_comment", "false");
+//                        }
+//                    } catch (JSONException  e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            });
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//}
+//}

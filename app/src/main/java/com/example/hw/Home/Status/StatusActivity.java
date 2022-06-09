@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 package com.example.hw.Home.Status;
 
         import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +11,7 @@ package com.example.hw.Home.Status;
         import android.content.Intent;
         import android.content.IntentFilter;
         import android.content.ServiceConnection;
+        import android.media.MediaPlayer;
         import android.net.Uri;
         import android.os.Bundle;
         import android.os.Environment;
@@ -60,6 +52,7 @@ package com.example.hw.Home.Status;
         import java.net.URLConnection;
         import java.text.ParseException;
         import java.text.SimpleDateFormat;
+        import java.util.ArrayList;
         import java.util.Date;
 
         import okhttp3.Call;
@@ -74,13 +67,16 @@ public class StatusActivity extends AppCompatActivity {
     private static final String LOG_TAG = StatusActivity.class.getSimpleName();
     private TextView titleView, msgView, urlText, mapText, creatornameView;
     private ImageButton shareButton, backButton,commentButton;
-    private ImageView imageView;
-    private Button startButton, pauseButton, followButton;
+    private ImageView imageView,LikeListButton;
+    private Button followButton;
     private String user_id, status_id;
     private Status status;
     private Switch likeSwitch;
     MediaController mediaController;
     private VideoView videoview;
+    private ArrayList<String> like_username_list = new ArrayList<String>();
+    private ArrayList<String> like_user_id_list = new ArrayList<String>();
+    private MediaPlayer mediaPlayer;
 
     // For audio
     boolean isPlay_audio = false;
@@ -150,7 +146,12 @@ public class StatusActivity extends AppCompatActivity {
                 imageView.setImageURI(Uri.fromFile(imgFile));
             }else if(status.type.equals("AUDIO"))
             {
-
+                File file = new File(getResources().getString(R.string.music_loc) + status.media);
+                videoview = (VideoView)findViewById(R.id.videoview2);
+                videoview.setVideoPath(file.getPath());
+//                File file = new File(getResources().getString(R.string.music_loc) + status.media);
+//                mediaPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(file.getPath()));
+//                mediaPlayer.start();
             }else if(status.type.equals("VIDEO")){
                 File file = new File(getResources().getString(R.string.video_loc) + status.media);
                 videoview = (VideoView)findViewById(R.id.videoview);
@@ -180,11 +181,6 @@ public class StatusActivity extends AppCompatActivity {
         if (type.equals("AUDIO")) {
             Log.d(LOG_TAG, "Music");
             setContentView(R.layout.activity_status_music);
-            startButton = findViewById(R.id.start);
-            startButton.setOnClickListener(this::startMusicPlayer);
-
-            pauseButton = findViewById(R.id.pause);
-            pauseButton.setOnClickListener(this::pauseMusicPlayer);
         } else if (type.equals("VIDEO")) {
             Log.d(LOG_TAG, "Video");
             setContentView(R.layout.activity_status_video);
@@ -198,6 +194,17 @@ public class StatusActivity extends AppCompatActivity {
             //共同需要
             creatornameView = findViewById(R.id.creatorName);
             creatornameView.setText(status.creator_username);
+            creatornameView.setOnClickListener(new AdapterView.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplicationContext(), OtherUserProfileActivity.class);
+                    Bundle extras = new Bundle();
+                    extras.putString("user_id_self", user_id);
+                    extras.putString("user_id_other", status.creator_id);
+                    intent.putExtras(extras);
+                    startActivity(intent);
+                }
+            });
             followButton = findViewById(R.id.followed);
             //chaxun followed
             followButton.setOnClickListener(this::followCreator);
@@ -253,6 +260,18 @@ public class StatusActivity extends AppCompatActivity {
                 }
             }
             likeSwitch = findViewById(R.id.likeSwitch);
+            LikeListButton = findViewById(R.id.LikeListButton);
+            LikeListButton.setOnClickListener(new AdapterView.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplicationContext(), LikeListActivity.class);
+                    Bundle extras = new Bundle();
+                    extras.putStringArrayList("user_id_list", like_user_id_list);
+                    extras.putStringArrayList("username_list", like_username_list);
+                    intent.putExtras(extras);
+                    startActivity(intent);
+                }
+            });
             likeSwitch.setText(Integer.toString(status.like));
             String jsonStr = "{\"user_id\":\"" + user_id + "\"," + "\"status_id\":\"" + status.status_id + "\"}";
             String requestUrl = getResources().getString(R.string.backend_url) + "query-like";
@@ -492,7 +511,37 @@ public class StatusActivity extends AppCompatActivity {
         }
     }
     private void isMusic(){
-
+        mediaController = new MediaController(this);
+        videoview = (VideoView)findViewById(R.id.videoview2);
+        mediaController.setAnchorView(videoview);
+        videoview.setMediaController(mediaController);
+        //mediaController.show();
+        File file = new File(getResources().getString(R.string.music_loc) + status.media);
+        if (file.exists()) {
+            Log.d(LOG_TAG,"video already exists");
+            videoview.setVideoPath(file.getPath());
+            videoview.start();
+            //mediaController.show();
+        } else {
+            //downloadVideo(status.media);
+            Intent intent = new Intent(getBaseContext(), MusicService.class);
+            intent.putExtra("type", "status");
+            intent.putExtra("name", status.media);
+            startService(intent);
+        }
+//        File file = new File(getResources().getString(R.string.video_loc) + status.media);
+//        if (file.exists()) {
+//            Log.d(LOG_TAG, "video already exists");
+//            mediaPlayer = MediaPlayer.create(getApplicationContext(), Uri.parse(status.media));
+//            mediaPlayer.start();
+//            //mediaController.show();
+//        } else {
+//            //downloadVideo(status.media);
+//            Intent intent = new Intent(getBaseContext(), MusicService.class);
+//            intent.putExtra("type", "status");
+//            intent.putExtra("name", status.media);
+//            startService(intent);
+//        }
     }
     private void isImage(){
         File file = new File(getResources().getString(R.string.image_loc) + status.media);
@@ -539,6 +588,18 @@ public class StatusActivity extends AppCompatActivity {
                             status.like = jObject.getInt("like");
                             Log.d(LOG_TAG, status.location);
                             Log.d("media_image", status.media);
+                            like_user_id_list.clear();
+                            like_username_list.clear();
+                            JSONArray LikedArray = jObject.getJSONArray("like_users");
+                            for (int i = 0; i < LikedArray.length(); i++) {
+                                JSONObject liked_tmp = LikedArray.getJSONObject(i);
+
+                                String user_id = liked_tmp.getString("user_id");
+                                String username = liked_tmp.getString("username");
+                                like_username_list.add(i, username);
+                                like_user_id_list.add(i, user_id);
+                            }
+
                             StatusActivity.this.runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
