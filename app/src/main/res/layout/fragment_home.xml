@@ -52,4 +52,14 @@
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/list" />
 
+    <Button
+        android:id="@+id/likedsort_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="60dp"
+        android:text="点赞排序"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
