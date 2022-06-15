@@ -73,6 +73,9 @@
             android:name=".Post.DraftActivity"
             android:exported="false" />
         <activity
+            android:name=".Post.DraftDeleteActivity"
+            android:exported="false" />
+        <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>
