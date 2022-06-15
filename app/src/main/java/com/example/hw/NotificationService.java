@@ -81,7 +81,7 @@ public class NotificationService extends FirebaseMessagingService {
         PendingIntent pendingIntent
                 = PendingIntent.getActivity(
                 this, 0, intent,
-                PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent.FLAG_MUTABLE);
 
         // Create a Builder object using NotificationCompat
         // class. This will allow control over all the flags

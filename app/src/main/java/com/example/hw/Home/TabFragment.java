@@ -148,6 +148,7 @@ public class TabFragment extends Fragment {
         status_all.setAdapter(mAdapter);
         LinearLayoutManager llm = new LinearLayoutManager((getContext()));
         status_all.setLayoutManager(llm);
+
         loadMore(view);
     }
 }

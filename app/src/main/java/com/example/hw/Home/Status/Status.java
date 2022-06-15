@@ -10,7 +10,7 @@ import java.util.Date;
 public class Status implements Parcelable {
     public String status_id, creator_id, creator_username, type, title, text,location,media;
     public Date date_created;
-    int like;
+    public int like;
 
     public Status(String status_id, String creator_id, String creator_username, String type, String title, String text,
                   Date date_created, int like)

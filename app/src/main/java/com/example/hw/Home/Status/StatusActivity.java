@@ -135,7 +135,7 @@ public class StatusActivity extends AppCompatActivity {
     private BroadcastReceiver onCompleteReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(LOG_TAG, "VIDEO");
+            //Log.d(LOG_TAG, "VIDEO");
             Toast.makeText(getApplicationContext(), "下载成功", Toast.LENGTH_LONG).show();
 
             if(status.type.equals("IMAGE"))
@@ -190,91 +190,30 @@ public class StatusActivity extends AppCompatActivity {
             imageView = findViewById(R.id.image);
             Log.d(LOG_TAG, status_id);
 
-
-            //共同需要
-            creatornameView = findViewById(R.id.creatorName);
-            creatornameView.setText(status.creator_username);
-            creatornameView.setOnClickListener(new AdapterView.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getApplicationContext(), OtherUserProfileActivity.class);
-                    Bundle extras = new Bundle();
-                    extras.putString("user_id_self", user_id);
-                    extras.putString("user_id_other", status.creator_id);
-                    intent.putExtras(extras);
-                    startActivity(intent);
-                }
-            });
-            followButton = findViewById(R.id.followed);
-            //chaxun followed
-            followButton.setOnClickListener(this::followCreator);
-            Log.d("userid", user_id);
-            Log.d("creatorid", status.creator_id);
-            if (user_id.equals(status.creator_id)) {
-                followButton.setText("(自己)");
-            } else {
-                String jsonStr = "{\"user_id\":\"" + user_id + "\"," + "\"user_id_followed\":\"" + status.creator_id + "\"}";
-                String requestUrl = getResources().getString(R.string.backend_url) + "check-follow";
-                try {
-                    OkHttpClient client = new OkHttpClient();
-                    MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
-
-                    @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
-                    Request request = new Request.Builder()
-                            .url(requestUrl)
-                            .post(body)
-                            .build();
-                    client.newCall(request).enqueue(new Callback() {
-                        @Override
-                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                            Log.d("chechfollow", "fail");
-                        }
-
-                        @Override
-                        public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                            final String responseStr = response.body().string();
-                            try {
-                                Log.d("chechfollow", "respone");
-                                JSONObject jObject = new JSONObject(responseStr);
-                                boolean res_status = jObject.getBoolean("status");
-                                Log.d("chechfollow", jObject.toString());
-                                if (res_status) {
-                                    Log.d("chechfollow", "true");
-                                    boolean followed = jObject.getBoolean("following");
-                                    if (followed) {
-                                        StatusActivity.this.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                followButton.setText("已关注");
-                                            }
-                                        });
-                                    }
-                                }
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        }
+        creatornameView = findViewById(R.id.creatorName);
+        creatornameView.setText(status.creator_username);
+        creatornameView.setOnClickListener(new AdapterView.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), OtherUserProfileActivity.class);
+                Bundle extras = new Bundle();
+                extras.putString("user_id_self", user_id);
+                extras.putString("user_id_other", status.creator_id);
+                intent.putExtras(extras);
+                startActivity(intent);
             }
-            likeSwitch = findViewById(R.id.likeSwitch);
-            LikeListButton = findViewById(R.id.LikeListButton);
-            LikeListButton.setOnClickListener(new AdapterView.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(getApplicationContext(), LikeListActivity.class);
-                    Bundle extras = new Bundle();
-                    extras.putStringArrayList("user_id_list", like_user_id_list);
-                    extras.putStringArrayList("username_list", like_username_list);
-                    intent.putExtras(extras);
-                    startActivity(intent);
-                }
-            });
-            likeSwitch.setText(Integer.toString(status.like));
-            String jsonStr = "{\"user_id\":\"" + user_id + "\"," + "\"status_id\":\"" + status.status_id + "\"}";
-            String requestUrl = getResources().getString(R.string.backend_url) + "query-like";
+        });
+        followButton = findViewById(R.id.followed);
+        //chaxun followed
+        followButton.setOnClickListener(this::followCreator);
+        Log.d("userid", user_id);
+        Log.d("creatorid", status.creator_id);
+        if (user_id.equals(status.creator_id)) {
+            followButton.setText("(自己)");
+        } else {
+            String jsonStr = "{\"user_id\":\"" + user_id + "\"," + "\"user_id_followed\":\"" + status.creator_id + "\"}";
+            String requestUrl = getResources().getString(R.string.backend_url) + "check-follow";
             try {
                 OkHttpClient client = new OkHttpClient();
                 MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
@@ -287,30 +226,28 @@ public class StatusActivity extends AppCompatActivity {
                 client.newCall(request).enqueue(new Callback() {
                     @Override
                     public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                        Log.d("chechliked", "fail");
+                        Log.d("chechfollow", "fail");
                     }
 
                     @Override
                     public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
                         final String responseStr = response.body().string();
                         try {
-                            Log.d("chechliked", "respone");
+                            Log.d("chechfollow", "respone");
                             JSONObject jObject = new JSONObject(responseStr);
                             boolean res_status = jObject.getBoolean("status");
-                            Log.d("chechliked", jObject.toString());
+                            Log.d("chechfollow", jObject.toString());
                             if (res_status) {
-                                boolean ifliked = jObject.getBoolean("liked");
-                                StatusActivity.this.runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        firstliked = ifliked;
-                                        if (ifliked) {
-                                            likeSwitch.setChecked(true);
-                                        } else {
-                                            likeSwitch.setChecked(false);
+                                Log.d("chechfollow", "true");
+                                boolean followed = jObject.getBoolean("following");
+                                if (followed) {
+                                    StatusActivity.this.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            followButton.setText("已关注");
                                         }
-                                    }
-                                });
+                                    });
+                                }
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -320,68 +257,129 @@ public class StatusActivity extends AppCompatActivity {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+        likeSwitch = findViewById(R.id.likeSwitch);
+        LikeListButton = findViewById(R.id.LikeListButton);
+        LikeListButton.setOnClickListener(new AdapterView.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), LikeListActivity.class);
+                Bundle extras = new Bundle();
+                extras.putStringArrayList("user_id_list", like_user_id_list);
+                extras.putStringArrayList("username_list", like_username_list);
+                intent.putExtras(extras);
+                startActivity(intent);
+            }
+        });
+        likeSwitch.setText(Integer.toString(status.like));
+        String jsonStr = "{\"user_id\":\"" + user_id + "\"," + "\"status_id\":\"" + status.status_id + "\"}";
+        String requestUrl = getResources().getString(R.string.backend_url) + "query-like";
+        try {
+            OkHttpClient client = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
 
-            likeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
+            Request request = new Request.Builder()
+                    .url(requestUrl)
+                    .post(body)
+                    .build();
+            client.newCall(request).enqueue(new Callback() {
                 @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (firstliked) {
-                        Log.d("like-unlike", "firstlike!!!");
-                        firstliked = false;
-                        return;
-                    }
-                    String jsonStr = "{\"user_id\":\"" + user_id + "\"," + "\"status_id\":\"" + status.status_id + "\"}";
-                    String requestUrl = getResources().getString(R.string.backend_url) + "like-unlike";
+                public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                    Log.d("chechliked", "fail");
+                }
+
+                @Override
+                public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                    final String responseStr = response.body().string();
                     try {
-                        OkHttpClient client = new OkHttpClient();
-                        MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
-
-                        @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
-                        Request request = new Request.Builder()
-                                .url(requestUrl)
-                                .post(body)
-                                .build();
-                        client.newCall(request).enqueue(new Callback() {
-                            @Override
-                            public void onFailure(@NotNull Call call, @NotNull IOException e) {
-                                Log.d("like-unlike", "fail");
-                            }
-
-                            @Override
-                            public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
-                                final String responseStr = response.body().string();
-                                try {
-                                    JSONObject jObject = new JSONObject(responseStr);
-                                    boolean res_status = jObject.getBoolean("status");
-                                    Log.d("like-unlike", jObject.toString());
-                                    if (res_status) {
-                                        StatusActivity.this.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                liked_unliked(isChecked, true);
-                                            }
-                                        });
+                        Log.d("chechliked", "respone");
+                        JSONObject jObject = new JSONObject(responseStr);
+                        boolean res_status = jObject.getBoolean("status");
+                        Log.d("chechliked", jObject.toString());
+                        if (res_status) {
+                            boolean ifliked = jObject.getBoolean("liked");
+                            StatusActivity.this.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    firstliked = ifliked;
+                                    if (ifliked) {
+                                        likeSwitch.setChecked(true);
                                     } else {
-                                        StatusActivity.this.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                liked_unliked(isChecked, false);
-                                            }
-                                        });
+                                        likeSwitch.setChecked(false);
                                     }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
                                 }
-                            }
-                        });
-                    } catch (Exception e) {
+                            });
+                        }
+                    } catch (JSONException e) {
                         e.printStackTrace();
                     }
-
                 }
             });
-            commentButton = findViewById(R.id.commentButton);
-            commentButton.setOnClickListener(this::clickComment);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+
+        likeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (firstliked) {
+                    Log.d("like-unlike", "firstlike!!!");
+                    firstliked = false;
+                    return;
+                }
+                String jsonStr = "{\"user_id\":\"" + user_id + "\"," + "\"status_id\":\"" + status.status_id + "\"}";
+                String requestUrl = getResources().getString(R.string.backend_url) + "like-unlike";
+                try {
+                    OkHttpClient client = new OkHttpClient();
+                    MediaType JSON = MediaType.parse("application/json; charset=utf-8");//数据类型为json格式，
+
+                    @SuppressWarnings("deprecation") RequestBody body = RequestBody.create(JSON, jsonStr);
+                    Request request = new Request.Builder()
+                            .url(requestUrl)
+                            .post(body)
+                            .build();
+                    client.newCall(request).enqueue(new Callback() {
+                        @Override
+                        public void onFailure(@NotNull Call call, @NotNull IOException e) {
+                            Log.d("like-unlike", "fail");
+                        }
+
+                        @Override
+                        public void onResponse(@NotNull Call call, @NotNull final Response response) throws IOException {
+                            final String responseStr = response.body().string();
+                            try {
+                                JSONObject jObject = new JSONObject(responseStr);
+                                boolean res_status = jObject.getBoolean("status");
+                                Log.d("like-unlike", jObject.toString());
+                                if (res_status) {
+                                    StatusActivity.this.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            liked_unliked(isChecked, true);
+                                        }
+                                    });
+                                } else {
+                                    StatusActivity.this.runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            liked_unliked(isChecked, false);
+                                        }
+                                    });
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
+        commentButton = findViewById(R.id.commentButton);
+        commentButton.setOnClickListener(this::clickComment);
         titleView = findViewById(R.id.titleView2);
         titleView.setText(title);
 
@@ -393,7 +391,7 @@ public class StatusActivity extends AppCompatActivity {
         urlText.setOnClickListener(this::clickURL);
 
         mapText = findViewById(R.id.map);
-        mapText.setText(getResources().getText(R.string.text_map));
+        mapText.setText("");
         mapText.setOnClickListener(this::clickMap);
 
         shareButton = findViewById(R.id.share_button);
@@ -612,6 +610,7 @@ public class StatusActivity extends AppCompatActivity {
                                     }else if(type.equals("VIDEO")){
                                         isVideo();
                                     }
+                                    mapText.setText(status.location);
 
                                 }
                             });

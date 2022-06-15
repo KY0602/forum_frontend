@@ -1,6 +1,7 @@
 package com.example.hw.Post;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -15,10 +16,7 @@ import android.location.LocationManager;
 import android.media.ExifInterface;
 import android.media.MediaRecorder;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.preference.PreferenceManager;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -27,11 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -46,10 +40,9 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -74,7 +67,6 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     private AppCompatActivity activity;
     private SharedPreferences pref;
     private Button btnCamera;
-    private ImageView imageView;
     private String mCurrentFilePath;
     private String cur_location;
     private File file = null;
@@ -85,6 +77,8 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     private double cur_lat = 10;
     private double cur_lon = 19;
     private HashSet<String> draftset;
+    private ArrayList<Draft> draftArrayList = new ArrayList<Draft>();
+    private Draft draft;
     String img_src;
     public static final int REQUEST_TAKE_PHOTO = 100;
     public static final int REQUEST_SELECT_PICTURE = 200;
@@ -104,7 +98,10 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "Destroy");
-        saveDraft();
+        if (draft == null) {
+            saveDraft();
+        }
+
     }
 
     @Override
@@ -116,23 +113,19 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        //View v = inflater.inflate(R.layout.fragment_post, container, false);
         super.onCreate(savedInstanceState);
-
-        //tstLocation();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        Log.d(LOG_TAG, formatter.format(new Date()));
         Date curDate = new Date(System.currentTimeMillis());
-        Log.d(LOG_TAG, curDate.toString());
-        Log.d("lat=", String.valueOf(cur_lat));
-        Log.d("lon=", String.valueOf(cur_lon));
         setContentView(R.layout.fragment_post);
         Intent intent = getIntent();
         Bundle extras = intent.getExtras();
-        posttype = extras.getString("type");
         user_id = extras.getString("user_id");
-        Log.d("posttype", posttype);
+        draft = extras.getParcelable("draft");
+        if (draft == null) {
+            posttype = extras.getString("type");
+        } else {
+            posttype = draft.type;
+        }
         btnCamera = (Button) findViewById(R.id.postPhotoButton);
         profile_pic_edit = findViewById(R.id.postPic_edit);
         profile_pic_edit.setOnClickListener(this::chooseImage);
@@ -151,23 +144,45 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             profile_pic_edit.setOnClickListener(this::chooseVideo);
             btnCamera.setText("录像");
         }
-        //imageView = (ImageView) findViewById(R.id.imageView);
 
         postTitle = (EditText) findViewById(R.id.postTitle);
         postMsg = (EditText) findViewById(R.id.postMsg);
         postButton = (ImageButton) findViewById(R.id.postButton);
         postButton.setOnClickListener(this);
         btnCamera.setOnClickListener(this);
+        draft = extras.getParcelable("draft");
+        if (draft == null) {
+            posttype = extras.getString("type");
+        } else {
+            posttype = draft.type;
+            postTitle.setText(draft.title);
+            postMsg.setText(draft.text);
+            if (!draft.mediapath.equals("null")) {
+                if (posttype.equals("txtandimg")) {
+                    file = new File(draft.mediapath);
+                    Bitmap bitmap = null;
+                    try {
+                        bitmap = MediaStore.Images.Media
+                                .getBitmap(getContentResolver(), Uri.fromFile(file));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    bitmap = rotateImage(bitmap, 90);
+                    profile_pic_edit.setImageBitmap(bitmap);
+                } else if (posttype.equals("audio")) {
+                    file = new File(draft.mediapath);
+                } else if (posttype.equals("video")) {
+                    file = new File(draft.mediapath);
+                }
+            }
+        }
         pref = getSharedPreferences("Draft", 0);
-        loadDraft();
-
     }
 
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        // 카메라 촬영을 하면 이미지뷰에 사진 삽입
         if (requestCode == REQUEST_TAKE_PHOTO) {
             File file = new File(mCurrentFilePath);
             this.file = file;
@@ -180,7 +195,6 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             }
 
             if (bitmap != null) {
-                Log.d("bitmap", bitmap.toString());
                 ExifInterface ei = null;
                 try {
                     ei = new ExifInterface(mCurrentFilePath);
@@ -208,23 +222,19 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                     default:
                         rotatedBitmap = bitmap;
                 }
-                Log.d("rotated", rotatedBitmap.toString());
-                //Rotate한 bitmap을 ImageView에 저장
                 profile_pic_edit.setImageBitmap(rotatedBitmap);
-
-
             }
         } else if (requestCode == REQUEST_TAKE_VIDEO) {
             File file = new File(mCurrentFilePath);
+            Log.d(TAG, "onActivityResult: REQUEST_TAKE_VIDEO" + mCurrentFilePath);
             this.file = file;
         } else if (requestCode == REQUEST_SELECT_PICTURE) {
             if (data == null) {
-                Log.d("", "exit");
             } else {
                 Uri selectedImageUri = data.getData();
                 if (selectedImageUri != null) {
                     profile_pic_edit.setImageURI(selectedImageUri);
-
+                    Log.d(TAG, "onActivityResult: REQUEST_SELECT_PICTURE" + data.getData());
                     // Get actual file URI
                     String wholeID = DocumentsContract.getDocumentId(selectedImageUri);
                     String id = wholeID.split(":")[1];
@@ -238,26 +248,19 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
 
                     if (cursor.moveToFirst()) {
                         img_src = cursor.getString(columnIndex);
-                        Log.d(LOG_TAG, img_src);
                     }
                     cursor.close();
 
                     // Upload
                     file = new File(img_src);
-                    //Log.d("file",file);
                 }
             }
 
         } else if (requestCode == REQUEST_SELECT_VIDEO) {
-            Log.d(LOG_TAG, "video here");
             if (data == null) {
-                Log.d("", "exit");
             } else {
                 Uri selectedVideoUri = data.getData();
                 if (selectedVideoUri != null) {
-                    //profile_pic_edit.setImageURI(selectedVideoUri);
-                    Log.d(LOG_TAG,selectedVideoUri.toString());
-                    // Get actual file URI
                     String wholeID = DocumentsContract.getDocumentId(selectedVideoUri);
                     String id = wholeID.split(":")[1];
                     String[] column = {MediaStore.Video.Media.DATA};
@@ -270,36 +273,22 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
 
                     if (cursor.moveToFirst()) {
                         img_src = cursor.getString(columnIndex);
-                        //Log.d(LOG_TAG, img_src);
                     }
                     cursor.close();
-                    //Log.d("ing_src=", img_src);
-                    // Upload
                     file = new File(img_src);
-
-                    //fileSizeView.setText((int) file.length());
-                    //Log.d("file",file);
+                    Log.d(TAG, "onActivityResult: REQUEST_SELECT_VIDEO" + img_src);
                 }
             }
-        }else if (requestCode == REQUEST_SELECT_AUDIO) {
-            Log.d(LOG_TAG, "audio here");
+        } else if (requestCode == REQUEST_SELECT_AUDIO) {
             if (data == null) {
-                Log.d(LOG_TAG, "exit");
             } else {
-                Log.d(LOG_TAG, "1e");
                 Uri selectedUri = data.getData();
-                Log.d(LOG_TAG, "2");
                 if (selectedUri != null) {
-                    //profile_pic_edit.setImageURI(selectedVideoUri);
-                    Log.d(LOG_TAG, "3");
-                    // Get actual file URI
-                    Log.d(LOG_TAG,selectedUri.toString());
                     String wholeID = DocumentsContract.getDocumentId(selectedUri);
-                    Log.d(LOG_TAG, "4");
                     String id = wholeID.split(":")[1];
                     String[] column = {MediaStore.Audio.Media.DATA};
                     String sel = MediaStore.Audio.Media._ID + "=?";
-                    Log.d(LOG_TAG, "5");
+
                     Cursor cursor = getContentResolver().query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
                             column, sel, new String[]{id}, null);
 
@@ -307,15 +296,9 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
 
                     if (cursor.moveToFirst()) {
                         img_src = cursor.getString(columnIndex);
-                        Log.d(LOG_TAG, img_src);
                     }
                     cursor.close();
-                    Log.d(LOG_TAG, img_src);
-                    // Upload
                     file = new File(img_src);
-
-                    //fileSizeView.setText((int) file.length());
-                    //Log.d("file",file);
                 }
             }
         }
@@ -335,16 +318,16 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
 
         startActivityForResult(intent, REQUEST_SELECT_PICTURE);
     }
+
     private boolean checkAudioPermission() {
         if (ActivityCompat.checkSelfPermission(getApplicationContext(), recordPermission) == PackageManager.PERMISSION_GRANTED) {
-            Log.i(LOG_TAG, "checkAudioPermission: audiopermission");
             return true;
         } else {
-            Log.i(LOG_TAG, "checkAudioPermission: audio not permission");
             ActivityCompat.requestPermissions(this, new String[]{recordPermission}, PERMISSION_CODE);
             return false;
         }
     }
+
     private void chooseAudio(View view) {
         Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI);
         intent.setType("audio/*");
@@ -367,117 +350,69 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         String msg = postMsg.getText().toString();
         pref = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        if(title.equals("")&&msg.equals("")&&mCurrentFilePath==null)
-        {
+        if (title.equals("") && msg.equals("") && file == null) {
             Log.d(TAG, "saveDraft: nodraft");
-        }else{
+        } else {
+            String s;
+            if (file == null) {
+                s = "null";
+            } else {
+                s = file.getPath();
+            }
             String jsonStr = "{\"title\":\"" + title + "\",\"type\":\"" + posttype
-                    + "\",\"text\":\"" + msg + "\",\"text\":\"" + msg + "\",\"media\":\"" + mCurrentFilePath + "\"}";
+                    + "\",\"text\":\"" + msg + "\",\"text\":\"" + msg + "\",\"media\":\"" + s + "\"}";
             SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-            //Log.d(LOG_TAG, formatter.format(new Date()));
             String id = formatter.format(new Date());
             editor.putString(id, jsonStr);
-            if(!pref.contains(KEYS))
-            {
-                Set tmpSet = new HashSet() {};
+            if (!pref.contains(KEYS)) {
+                Set tmpSet = new HashSet() {
+                };
                 editor.putStringSet(KEYS, tmpSet);
                 editor.apply();
-                Log.d(TAG, "saveDraft: NO!!!!!!!!!!!!!!!!!!");
             }
-            if (pref == null && pref.contains(KEYS)){
-                Log.d(LOG_TAG, "saveDraft: error");
+            if (pref == null && pref.contains(KEYS)) {
                 Toast.makeText(getApplicationContext(), "pref null", Toast.LENGTH_SHORT).show();
-            }
-            else {
-                Log.d(TAG, "saveDraft: pref!!");
+            } else {
                 draftset = (HashSet<String>) pref.getStringSet(KEYS, null);
                 if (!draftset.contains(id)) {
                     draftset.add(id);
                 }
                 editor.putStringSet(KEYS, draftset);
-                //editor.putString("MESSAGE", msg);
                 editor.apply();
                 Toast.makeText(getApplicationContext(), "草稿保存成功", Toast.LENGTH_SHORT).show();
             }
-        }
-
-        //
-    }
-
-    // 打开页面时，读入草稿
-    public void loadDraft() {
-        if (pref.contains("TITLE") || pref.contains("MESSAGE")) {
-//            Toast.makeText(getActivity().getApplicationContext(), "草稿加载成功", Toast.LENGTH_SHORT).show();
-            if (pref.contains("TITLE")) {
-                postTitle.setText(pref.getString("TITLE", ""));
-            }
-            if (pref.contains("MESSAGE")) {
-                postMsg.setText(pref.getString("MESSAGE", ""));
-            }
-        }
-    }
-
-    public void tstLocation() {
-        LocationManager manager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= 23 &&
-                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.e(LOG_TAG, "FailedPermmison");
-            return;
-        }
-        Location location = manager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
-        double latitude = location.getLatitude();
-        Log.d("???", "???");
-        if (location != null) {
-            //double latitude = location.getLatitude();
-            double longitude = location.getLongitude();
-            String message = "최근 위치 -> Latitude : " + latitude + "\nLongitude : " + longitude;
-            Log.d("?", message);
-            //tv_location.setText(message);
         }
     }
 
     public void getCurrentLocation() {
         boolean permissionGranted = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
         if (permissionGranted) {
-            Log.d("permission", "1");
+            //Log.d("permission", "1");
             LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 //마지막 위치 받아오기
-            Log.d("ssssss", locationManager.toString());
             Location loc_Current = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             loc_Current = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
             if (loc_Current == null && locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER) == null) {
-                Log.d("wait", "wait");
                 loc_Current = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
             } else {
-                Log.d("sss", loc_Current.toString());
-                cur_lat = loc_Current.getLatitude(); //위도
-                cur_lon = loc_Current.getLongitude(); //경도
+                cur_lat = loc_Current.getLatitude();
+                cur_lon = loc_Current.getLongitude();
                 Geocoder geocoder = new Geocoder(this, Locale.getDefault());
                 List<Address> addresses = null;
-                Log.d("JJJJJ", "JJJJJJ");
                 try {
-                    Log.d("JJJJJ", "JJJJJJ");
                     addresses = geocoder.getFromLocation(
                             cur_lat,
                             cur_lon,
                             7);
                     cur_location = addresses.get(0).getAddressLine(0);
-                    Log.d("address", cur_location);
-
-                    //Log.d("locality",addresses.get(0).);
                 } catch (IOException ioException) {
-
-                    //네트워크 문제
                     Toast.makeText(this, "지오코더 서비스 사용불가", Toast.LENGTH_LONG).show();
                 } catch (IllegalArgumentException illegalArgumentException) {
                     Toast.makeText(this, "잘못된 GPS 좌표", Toast.LENGTH_LONG).show();
                     if (addresses == null || addresses.size() == 0) {
                         Toast.makeText(this, "주소 미발견", Toast.LENGTH_LONG).show();
-                        //return "주소 미발견";
-
                     }
-                    //cur_location = address.getAddressLine(0);
 
                 }
             }
@@ -505,7 +440,6 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(final View v) {
         switch (v.getId()) {
             case R.id.postButton:
-                Log.d(LOG_TAG, "Post");
                 clickPost(file);
                 break;
             case R.id.postPhotoButton: {
@@ -513,51 +447,35 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                     capture();
                 else if (posttype.equals("audio")) {
                     recordAudio();
-
                 } else if (posttype.equals("video")) {
                     recordVideo();
                 }
             }
             break;
             default:
-                Log.d(LOG_TAG, "No match");
+                //Log.d(LOG_TAG, "No match");
                 break;
         }
     }
-    public void recordAudio(){
-        if(isRecording){
+
+    public void recordAudio() {
+        if (isRecording) {
             isRecording = false;
             btnCamera.setText("开始录音");
-            //Toast.makeText(activity, "结束录音", Toast.LENGTH_SHORT).show();
             stopRecording();
-        }else{
-            if(checkAudioPermission())
-            {
+        } else {
+            if (checkAudioPermission()) {
                 isRecording = true;
                 postButton.setVisibility(View.INVISIBLE);
                 btnCamera.setText("结束录音");
-                //Toast.makeText(activity, "开始录音", Toast.LENGTH_SHORT).show();
                 String recordPath = getExternalFilesDir("/").getAbsolutePath();
-                // 파일 이름 변수를 현재 날짜가 들어가도록 초기화. 그 이유는 중복된 이름으로 기존에 있던 파일이 덮어 쓰여지는 것을 방지하고자 함.
                 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-                audioFileName = recordPath+ "/" +"RecordExample_" + timeStamp + "_"+"audio.mp3";
-                Log.d(TAG, "recordAudio: "+audioFileName);
-//            MediaRecorder recorder = new MediaRecorder();
-////设置音频资源的来源包括：麦克风，通话上行，通话下行等；程序中设定音频来源为麦克风
-//
-//            recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-////设置输出文件的格式如3gp、mpeg4等
-//            recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-////设置音频编码器，程序中设定音频编码为AMR窄带编码
-//            recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-////设置文件输出路径，程序中的PATH_NAME要用实际路径替换掉
-//            recorder.setOutputFile(audioFileName);
+                audioFileName = recordPath + "/" + "RecordExample_" + timeStamp + "_" + "audio.mp3";
                 mediaRecorder = new MediaRecorder();
                 mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
                 mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
                 mediaRecorder.setOutputFile(audioFileName);
                 mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-//准备开始，这就在start前，必须调用
                 try {
                     mediaRecorder.prepare();
                 } catch (IOException e) {
@@ -565,14 +483,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                 }
 
                 mediaRecorder.start();   // Recording is now started
-////开始后调用，但是如果刚刚开始就停止会抛出异常
-//            recorder.stop();
-////将MediaRecorder置于空闲状况，如果要重新启动MediaRecorder需要重新配置参数
-//            recorder.reset();   // You can reuse the object by going back to setAudioSource() step
-//释放MediaRecorder相关资源，如果不再调用MediaRecorder就要把资源释放掉。
-
-                //recorder.release(); // Now the object cannot be reused
-            }else{
+            } else {
                 Toast.makeText(activity, "请先获取录音权限", Toast.LENGTH_SHORT).show();
             }
         }
@@ -587,20 +498,6 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         mediaRecorder = null;
         postButton.setVisibility(View.VISIBLE);
         this.file = new File(audioFileName);
-
-        // 파일 경로(String) 값을 Uri로 변환해서 저장
-        //      - Why? : 리사이클러뷰에 들어가는 ArrayList가 Uri를 가지기 때문
-        //      - File Path를 알면 File을  인스턴스를 만들어 사용할 수 있기 때문
-//        audioUri = Uri.parse(audioFileName);
-//
-//
-//        // 데이터 ArrayList에 담기
-//        audioList.add(audioUri);
-//
-//
-//        // 데이터 갱신
-//        audioAdapter.notifyDataSetChanged();
-
     }
 
     public void recordVideo() {
@@ -625,14 +522,10 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
         if (videoFile != null) {
-            //Uri 가져오기
             Uri videoURI = FileProvider.getUriForFile(this,
                     getPackageName() + ".fileprovider",
                     videoFile);
-            //인텐트에 Uri담기
             takeVideoIntent.putExtra(MediaStore.EXTRA_OUTPUT, videoURI);
-
-            //인텐트 실행
             startActivityForResult(takeVideoIntent, REQUEST_TAKE_PHOTO);
         }
     }
@@ -641,15 +534,14 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         File tempDir = getCacheDir();
         File photoFile = null;
-        //임시촬영파일 세팅
 
         try {
             String timeStamp = new SimpleDateFormat("yyyyMMdd").format(new Date());
             String imageFileName = "Capture_" + timeStamp + "_"; //ex) Capture_20201206_
             File tempfile = File.createTempFile(
-                    imageFileName,  /* 파일이름 */
-                    ".jpg",         /* 파일형식 */
-                    tempDir      /* 경로 */
+                    imageFileName,
+                    ".jpg",
+                    tempDir
 
             );
             mCurrentFilePath = tempfile.getAbsolutePath();
@@ -659,14 +551,10 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             e.printStackTrace();
         }
         if (photoFile != null) {
-            //Uri 가져오기
             Uri photoURI = FileProvider.getUriForFile(this,
                     getPackageName() + ".fileprovider",
                     photoFile);
-            //인텐트에 Uri담기
             takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-
-            //인텐트 실행
             startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
         }
     }
@@ -681,26 +569,23 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(getApplicationContext(), "动态标题或内容不能为空", Toast.LENGTH_LONG).show();
         } else {
             if (posttype.equals("txtandimg")) {
-                Log.d("here1", posttype);
+                // Log.d("here1", posttype);
                 if (file == null) {
                     type = "TEXT";
                     file = new File("null");
                 } else {
                     type = "IMAGE";
                 }
-                Log.d("type=", type);
+                // Log.d("type=", type);
 
             } else if (posttype.equals("audio")) {
                 type = "AUDIO";
             } else if (posttype.equals("video")) {
                 type = "VIDEO";
             } else {
-                Log.e("typeError", posttype);
+                // Log.e("typeError", posttype);
                 return;
             }
-
-//            String jsonStr = "{\"user_id\":\"" + user_id + "\",\"type\":\"" + type
-//                    + "\",\"title\":\"" + title + "\",\"text\":\"" + msg + "\",\"media\":\"" + "null" + "\",\"location\":\"" + "hh" + "\"}";
             String requestUrl = getResources().getString(R.string.backend_url) + "create-status";
 
             try {
@@ -754,8 +639,6 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                             boolean status = jObject.getBoolean("status");
                             if (status) {
                             } else {
-
-                                Log.d("messagr", jObject.getString("message"));
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -771,11 +654,21 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
             postTitle.getText().clear();
             postMsg.getText().clear();
 
-            SharedPreferences.Editor editor = pref.edit();
-            editor.clear();
-            editor.commit();
-
             switchContent(title, msg);
+            pref = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+            if(draft != null){
+                if (pref != null && pref.contains(KEYS)) {
+                    @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = pref.edit();
+                    editor.remove(draft.key);
+                    editor.apply();
+
+                    finish();
+                }
+            }else{
+
+            }
+
+
         }
     }
 
@@ -784,7 +677,6 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
         if (activity == null) {
             return;
         } else if (activity instanceof MainActivity) {
-            Log.d(LOG_TAG, "Switch");
             MainActivity mainActivity = (MainActivity) activity;
             mainActivity.switchHome(title, msg);
         }
