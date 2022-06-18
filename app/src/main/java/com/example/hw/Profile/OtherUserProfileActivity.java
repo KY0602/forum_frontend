@@ -6,6 +6,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.example.hw.Home.Status.ImageService;
 import com.example.hw.R;
 
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -41,24 +42,17 @@ public class OtherUserProfileActivity extends AppCompatActivity {
     Button follow_unfollow, block_unblock;
     String user_id_self, user_id_other, profile_pic_user, username_user, desc_user;
 
-    // Resume时register receiver，会捕捉到"IMAGE-DOWNLOADED"的broadcast，用以图片下载完成时通知
     @Override
     public void onResume() {
-        // Register to receive messages.
-        // We are registering an observer (mMessageReceiver) to receive Intents
-        // with actions named "IMAGE-DOWNLOADED".
-        LocalBroadcastManager.getInstance(this).registerReceiver(
-                mMessageReceiver, new IntentFilter("IMAGE-DOWNLOADED"));
+        registerReceiver(onCompleteReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         super.onResume();
     }
 
-    // 图片下载完成时，将本地存储的图片添加到imageView中
-    // Our handler for received Intents. This will be called whenever an Intent
-    // with an action named "IMAGE-DOWNLOADED" is broadcast.
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver(){
+    private BroadcastReceiver onCompleteReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Log.d(LOG_TAG, "Image downloaded");
+            Toast.makeText(getApplicationContext(), "下载成功", Toast.LENGTH_LONG).show();
+
             File imgFile = new File(getResources().getString(R.string.image_loc) + profile_pic_user);
             profile_pic.setImageURI(Uri.fromFile(imgFile));
         }

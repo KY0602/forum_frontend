@@ -1,6 +1,7 @@
 package com.example.hw.Profile;
 
 import android.app.Activity;
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -16,6 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -55,28 +57,19 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         // require a empty public constructor
     }
 
-    // Resume时register receiver，会捕捉到"IMAGE-DOWNLOADED"的broadcast，用以图片下载完成时通知
     @Override
     public void onResume() {
-        // Register to receive messages.
-        // We are registering an observer (mMessageReceiver) to receive Intents
-        // with actions named "IMAGE-DOWNLOADED".
-        LocalBroadcastManager.getInstance(activity).registerReceiver(
-                mMessageReceiver, new IntentFilter("IMAGE-DOWNLOADED"));
+        activity.registerReceiver(onCompleteReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
         super.onResume();
     }
 
-    // 图片下载完成时，将本地存储的图片添加到imageView中
-    // Our handler for received Intents. This will be called whenever an Intent
-    // with an action named "IMAGE-DOWNLOADED" is broadcast.
-    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver(){
+    private BroadcastReceiver onCompleteReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals("IMAGE-DOWNLOADED")) {
-                Log.d(LOG_TAG, "Image downloaded");
-                File imgFile = new File(getResources().getString(R.string.image_loc) + profile_pic_user);
-                profile_pic.setImageURI(Uri.fromFile(imgFile));
-            }
+            Toast.makeText(activity, "下载成功", Toast.LENGTH_LONG).show();
+
+            File imgFile = new File(getResources().getString(R.string.image_loc) + profile_pic_user);
+            profile_pic.setImageURI(Uri.fromFile(imgFile));
         }
     };
 

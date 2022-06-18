@@ -612,16 +612,28 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
                                 .build();
                     }
                 } else {
-                    requestBody = new MultipartBody.Builder()
-                            .setType(MultipartBody.FORM)
-                            .addFormDataPart("user_id", user_id)
-                            .addFormDataPart("type", type)
-                            .addFormDataPart("title", title)
-                            .addFormDataPart("text", msg)
-                            .addFormDataPart("media", file.getName(),
-                                    RequestBody.create(MediaType.parse("image/*"), file))
-                            .addFormDataPart("location", cur_location)
-                            .build();
+                    if (cur_location == null) {
+                        requestBody = new MultipartBody.Builder()
+                                .setType(MultipartBody.FORM)
+                                .addFormDataPart("user_id", user_id)
+                                .addFormDataPart("type", type)
+                                .addFormDataPart("title", title)
+                                .addFormDataPart("text", msg)
+                                .addFormDataPart("media", file.getName(),
+                                        RequestBody.create(MediaType.parse("image/*"), file))
+                                .build();
+                    } else {
+                        requestBody = new MultipartBody.Builder()
+                                .setType(MultipartBody.FORM)
+                                .addFormDataPart("user_id", user_id)
+                                .addFormDataPart("type", type)
+                                .addFormDataPart("title", title)
+                                .addFormDataPart("text", msg)
+                                .addFormDataPart("media", file.getName(),
+                                        RequestBody.create(MediaType.parse("image/*"), file))
+                                .addFormDataPart("location", cur_location)
+                                .build();
+                    }
                 }
                 Request request = new Request.Builder()
                         .url(requestUrl).post(requestBody)
