@@ -1,6 +1,9 @@
 package com.example.hw.Home;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -42,6 +45,7 @@ import okhttp3.Response;
 
 public class TabFragment extends Fragment {
     private static final String LOG_TAG = TabFragment.class.getSimpleName();
+    private static final String TAG = TabFragment.class.getSimpleName();
     private final LinkedList<String> statusTypeAll = new LinkedList<>();
     private final LinkedList<String> statusTitleAll = new LinkedList<>();
     private final LinkedList<String> statusMsgAll = new LinkedList<>();
@@ -53,17 +57,38 @@ public class TabFragment extends Fragment {
     private RecyclerView status_all;
     private WordListAdapter mAdapter;
     private Button load_button;
-
+    private Context context;
+    private View v;
     public TabFragment(){
         // require a empty public constructor
     }
+    private final BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Log.d(TAG, "onReceive: BroadCast Catched");
+           //mAdapter = new WordListAdapter(getContext(), statusTypeAll, statusTitleAll, statusMsgAll,statusidAll,statususeridAll,statusAll);
+//            status_all.setAdapter(mAdapter);
+//            LinearLayoutManager llm = new LinearLayoutManager((getContext()));
+//            status_all.setLayoutManager(llm);
+//            loadMore(v);
+        }
+    };
 
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume: ");
+        mAdapter = new WordListAdapter(getContext(), statusTypeAll, statusTitleAll, statusMsgAll,statusidAll,statususeridAll,statusAll);
+        status_all.setAdapter(mAdapter);
+        LocalBroadcastManager.getInstance(context).registerReceiver(
+                mMessageReceiver, new IntentFilter("STATUSLIST-OBTAINED"));
+        super.onResume();
+    }
     // 通过getArguments从PagerAdapter获取动态列表，此处AUDIO和VIDEO只是为了测试音频和视频而写死两个动态
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_tab, container, false);
-
+        v = inflater.inflate(R.layout.fragment_tab, container, false);
+        context = container.getContext();
         statusTypeAll.clear();
         statusTitleAll.clear();
         statusMsgAll.clear();
@@ -79,23 +104,13 @@ public class TabFragment extends Fragment {
             statusid_list_all = extras.getStringArrayList("EXTRA_STATUS_ID");
             userid_list_all = extras.getStringArrayList("EXTRA_USER_ID");
             status_list_all = extras.<Status>getParcelableArrayList("EXTRA_STATUS");
-//            for (int i = 0; i < 10; i++)
-//            {
-//                statusTypeAll.addLast(type_list_all.get(i));
-//                statusTitleAll.addLast(title_list_all.get(i));
-//                statusMsgAll.addLast(msg_list_all.get(i));
-//            }
         }
-//        statusTypeAll.addFirst("AUDIO");
-//        statusTitleAll.addFirst("Music");
-//        statusMsgAll.addFirst("This is a music.");
-//
-//        statusTypeAll.addFirst("VIDEO");
-//        statusTitleAll.addFirst("Video");
-//        statusMsgAll.addFirst("This is a video.");
+
 
         load_button = v.findViewById(R.id.load_button);
         load_button.setOnClickListener(this::loadMore);
+
+
 
         status_all = v.findViewById(R.id.recycle_all);
         mAdapter = new WordListAdapter(getContext(), statusTypeAll, statusTitleAll, statusMsgAll,statusidAll,statususeridAll,statusAll);

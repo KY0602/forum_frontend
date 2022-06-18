@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 public class HomeFragment extends Fragment {
     private static final String LOG_TAG = HomeFragment.class.getSimpleName();
+    private static final String TAG = HomeFragment.class.getSimpleName();
     private PagerAdapter adapter;
     private ArrayList<String> title_list = new ArrayList<String>();
     private ArrayList<String> msg_list = new ArrayList<String>();
@@ -36,6 +37,13 @@ public class HomeFragment extends Fragment {
         Log.d(LOG_TAG, "Save");
     }
 
+    @Override
+    public void onResume() {
+        Log.d(TAG, "onResume: ");
+        super.onResume();
+        adapter = new PagerAdapter(getChildFragmentManager(), tabLayout.getTabCount(),this.getContext());
+        viewPager.setAdapter(adapter);
+    }
     // 恢复状态
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
