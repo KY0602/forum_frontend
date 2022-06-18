@@ -29,6 +29,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.hw.MainActivity;
 import com.example.hw.R;
@@ -88,6 +89,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     private String recordPermission = Manifest.permission.RECORD_AUDIO;
     private int PERMISSION_CODE = 21;
     private boolean isRecording = false;
+    private boolean isPosted = false;
     private Uri audioUri = null; // 오디오 파일 uri
 
     public PostActivity() {
@@ -98,7 +100,7 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
     public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "Destroy");
-        if (draft == null) {
+        if (draft == null && !isPosted) {
             saveDraft();
         }
 
@@ -668,16 +670,19 @@ public class PostActivity extends AppCompatActivity implements View.OnClickListe
 
             switchContent(title, msg);
             pref = getSharedPreferences(MY_PREFS_NAME, MODE_PRIVATE);
+            Intent intent = new Intent("STATUSLIST-OBTAINED");
+            LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
             if(draft != null){
                 if (pref != null && pref.contains(KEYS)) {
                     @SuppressLint("CommitPrefEdits") SharedPreferences.Editor editor = pref.edit();
                     editor.remove(draft.key);
                     editor.apply();
-
+                    isPosted = true;
                     finish();
                 }
             }else{
-
+                isPosted = true;
+                finish();
             }
 
 
