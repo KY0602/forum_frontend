@@ -53,7 +53,6 @@ public class TabFragment extends Fragment {
     private RecyclerView status_all;
     private WordListAdapter mAdapter;
     private Button load_button;
-    private Button reload_button;
 
     public TabFragment(){
         // require a empty public constructor
@@ -97,9 +96,6 @@ public class TabFragment extends Fragment {
 
         load_button = v.findViewById(R.id.load_button);
         load_button.setOnClickListener(this::loadMore);
-
-        reload_button = v.findViewById(R.id.reload_button);
-        reload_button.setOnClickListener(this::reload);
 
         status_all = v.findViewById(R.id.recycle_all);
         mAdapter = new WordListAdapter(getContext(), statusTypeAll, statusTitleAll, statusMsgAll,statusidAll,statususeridAll,statusAll);
