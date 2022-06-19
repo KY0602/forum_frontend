@@ -1,0 +1,1 @@
+此APK后端地址是我们自己的后端地址，需要先将res/values/strings.xml中backend_url替换为你的后端地址后重新build，才能够连接到后端
