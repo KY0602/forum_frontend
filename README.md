@@ -2,3 +2,5 @@
 --
 组长：陈彦扬
 组员：霍建宇、白承桓
+
+![Screenshot](forum.png)
