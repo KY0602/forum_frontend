@@ -1,6 +1,4 @@
-清华大学软件学院2021/22春季学期《移动应用软件开发》大作业：校园论坛安卓前端
+校园论坛安卓前端 School Forum Android Application Frontend
 --
-组长：陈彦扬
-组员：霍建宇、白承桓
 
 ![Screenshot](forum.png)
